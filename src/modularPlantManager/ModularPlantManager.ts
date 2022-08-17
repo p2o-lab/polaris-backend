@@ -263,9 +263,13 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 					this.emit('notify', {message: 'pea', pea: pea.json()});
 				})
 				.on('disconnected', () => {
-					catManager.info('PEAController disconnected');
+					catManager.info('PEA disconnected');
 					this.emit('notify', {message: 'pea', pea: pea.json()});
 				})
+			.on('connectionChange', () => {
+				catManager.info('PEA connection changed');
+				this.emit('notify', {message: 'pea', pea: pea.json()});
+			})
 				.on('controlEnable', ({service}) => {
 					this.emit('notify', {message: 'service', peaId: pea.id, service: service.json()});
 				})

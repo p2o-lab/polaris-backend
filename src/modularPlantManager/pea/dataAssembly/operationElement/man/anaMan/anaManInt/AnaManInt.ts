@@ -45,6 +45,7 @@ export class AnaManInt extends AnaMan {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}	
 	}
 

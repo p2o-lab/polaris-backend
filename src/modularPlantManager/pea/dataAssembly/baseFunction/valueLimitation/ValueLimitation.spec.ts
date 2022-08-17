@@ -78,7 +78,8 @@ describe('ValueLimitation', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new ValueLimitation(referenceDataAssembly.dataItems as DIntManDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.VMax.value).to.equal(0);
 			expect(baseFunction.dataItems.VMin.value).to.equal(0);

@@ -77,7 +77,7 @@ describe('ActiveElement', () => {
 		it('should subscribe successfully', async () => {
 			const dataAssembly = new ActiveElement(dataAssemblyModel, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.wqc.WQC).equal(0);

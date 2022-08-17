@@ -90,7 +90,8 @@ describe('SourceModeController', () => {
 
 			const baseFunction = new SourceModeController(referenceDataAssembly.dataItems as AnaDrvDataItems);
 
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			
 			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
@@ -129,7 +130,8 @@ describe('SourceModeController', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new SourceModeController(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 		
@@ -190,7 +192,8 @@ describe('SourceModeController', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new SourceModeController(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 

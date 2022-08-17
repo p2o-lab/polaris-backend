@@ -24,14 +24,15 @@
  */
 
 import {
-	AdapterInfo,
-	CommandEnableInfo, ConnectionHandlerInfo, DataAssemblyOptions, OpcUaEndpointSetting, OperationMode,
+	AdapterConnectOptions,
+	AdapterOptions,
+	CommandEnableInfo, ConnectionInfo, DataAssemblyOptions, OpcUaAdapterOptions, OperationMode,
 	ParameterInterface, PEAInterface,
 	ServiceCommand,
 	ServiceInterface, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
-import {DataItemEmitter, OpcUaDataItem} from './connectionHandler';
+import {BaseDataItem, DataItemEmitter} from './connectionHandler';
 import {
 	DataAssembly, DataAssemblyFactory,
 	ServiceState
@@ -45,6 +46,7 @@ import {catPEA} from '../../logging';
 import {ConnectionHandler} from './connectionHandler/ConnectionHandler';
 import {DataAssemblyModel, PEAModel, ServiceModel} from '@p2olab/pimad-interface';
 import {IDProvider} from '../_utils';
+import {DataItem} from '@p2olab/pimad-types';
 
 export interface ParameterChange {
 	timestampPEA: Date;
@@ -61,15 +63,21 @@ export interface ParameterChange {
  */
 interface PEAEvents {
 	/**
-	 * when POL successfully connects to PEAController
+	 * when POL successfully connects to PEA
 	 * @event connected
 	 */
 	connected: void;
 	/**
-	 * when POL is disconnected from PEAController
+	 * when POL is disconnected from PEA
 	 * @event disconnected
 	 */
 	disconnected: void;
+	/**
+	 * when connection changes
+	 * @event connectionChange
+	 */
+	connectionChange: void;
+
 	/**
 	 * when commandEnable of one service changes
 	 * @event commandEnable
@@ -178,7 +186,11 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		this.connectionHandler = new ConnectionHandler()
 			.on('connected', () => this.emit('connected'))
 			.on('disconnected', () => this.emit('disconnected'));
-		options.endpoints.forEach(epOptions => this.connectionHandler.addConnectionAdapter(epOptions));
+		options.endpoints.forEach(
+			epOptions => {
+				const adapterOptions: OpcUaAdapterOptions = {name: epOptions.name, endpoint: epOptions.value};
+				this.connectionHandler.addConnectionAdapter(adapterOptions);
+			});
 
 
 		if (options.services) {
@@ -191,12 +203,11 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 					DataAssemblyFactory.create(options, this.connectionHandler)
 				);
 		}
-		this.connectionHandler.initializeAdapter().then();
 		this.subscribe().then();
 	}
 
-	public async updateConnectionAdapter(adapterId: string, options: OpcUaEndpointSetting) {
-		await this.connectionHandler.updateConnectionAdapter(adapterId, options);
+	public async updateConnectionAdapter(adapterId: string, options: AdapterOptions) {
+		await this.connectionHandler.updateAdapter(adapterId, options);
 	}
 
 	public isProtected(): boolean {
@@ -224,15 +235,21 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		return this.services.map((service) => service.json());
 	}
 
-	public async initializeConnection(adapterId?: string): Promise<void> {
-		await this.connectionHandler.initializeAdapter();
+	public async initializeConnection(adapterId: string, options?: AdapterOptions): Promise<void> {
+		await this.connectionHandler.updateAdapter(adapterId, options);
 	}
 
 	/**
-	 * This function connects the PEAController to the OPCUAServer
+	 * This function connects the PEA to the OPCUAServer
 	 */
-	public async connect(adapterId?: string, options?: OpcUaEndpointSetting): Promise<void> {
-		await this.connectionHandler.connect(adapterId, options);
+	public async connect(adapterId?: string, options?: AdapterConnectOptions): Promise<void> {
+		if (adapterId){
+			await this.connectionHandler.connectAdapter(adapterId, options);
+			await this.connectionHandler.startMonitoring(adapterId);
+		} else {
+			await this.connectionHandler.connectAllConnectionAdapters();
+			await this.connectionHandler.startMonitoring();
+		}
 		this.emit('connected');
 	}
 
@@ -243,11 +260,11 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		const pv = this.subscribeToAllDataAssemblies();
 		const pa = this.subscribeToAllServices();
 		await Promise.all([pv,pa]);
-		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connectionHandler.monitoredDataItemsCount()} Nodes`);
+		this.logger.info(`[${this.id}] Successfully subscribed to ${this.connectionHandler.monitoredDataItemsCount()} DataItems`);
 	}
 
 	/**
-	 * This function disconnects the PEAController to the OPCUAServer
+	 * This function disconnects the POL from  to the OPCUAServer
 	 */
 	public async disconnect(): Promise<void> {
 		this.logger.info(`[${this.id}] Disconnect PEA`);
@@ -257,7 +274,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	}
 
 	/**
-	 * Close session and disconnect from PEAController
+	 * Close session and disconnect from PEA
 	 */
 	private async unsubscribe(): Promise<void> {
 		await this.unsubscribeFromAllDataAssemblies();
@@ -275,9 +292,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 			id: this.id,
 			pimadIdentifier: this.pimadIdentifier,
 			description: '',
-			endpoint: this.options.endpoints[0].value.toString(),
-			hmiUrl: '',
-			connected: this.isConnected(),
+			connectionInfo: this.getConnectionInfo(),
 			services: this.getServiceStates(),
 			processValues: [],
 			protected: this.protected
@@ -289,26 +304,34 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	 * @returns {boolean}
 	 */
 	public isConnected(): boolean {
-		return this.connectionHandler.connectionEstablished;
+		return this.connectionHandler.connected();
 	}
 
 	/**
-	 * get current connectionHandlerInfo of PEA
+	 * get current ConnectionInfo of PEA
 	 */
-	public getCurrentConnectionSettings(): ConnectionHandlerInfo {
-		return this.connectionHandler.connectionAdapterInfo;
+	public getConnectionInfo(): ConnectionInfo {
+		return this.connectionHandler.connectionInfo;
 	}
 
 
-	public listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter {
+	public listenToDataAssembly(dataAssemblyName: string, specificDataItemName?: string): DataItemEmitter {
 		const dataAssembly: DataAssembly | undefined = this.dataAssemblies.find(
-			(variable) => variable.name === dataAssemblyName);
+			(dataAssembly) => dataAssembly.name === dataAssemblyName);
 		if (!dataAssembly) {
 			throw new Error(`PEA ${this.id} does not contain DataAssembly ${dataAssemblyName}`);
 		}
 		const emitter: EventEmitter = new EventEmitter();
-		//TODO check event emitter logic
-		dataAssembly.on('changed', (data: any) => emitter.emit('changed', data));
+
+		if (!specificDataItemName){
+			dataAssembly.on('changed', (data: any) => emitter.emit('changed', data));
+		} else {
+			const dataItem: DataItem<any> | undefined =  dataAssembly.dataItems[specificDataItemName as keyof typeof dataAssembly.dataItems];
+			if (!dataItem) {
+				throw new Error(`PEA ${this.id} does not contain DataAssembly ${dataAssemblyName}`);
+			}
+			(dataItem as BaseDataItem<any>).on('changed', (data: any) => emitter.emit('changed', data));
+		}
 		return emitter;
 	}
 
@@ -410,14 +433,14 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		return Promise.all(
 			this.dataAssemblies.map((dataAssembly: DataAssembly) => {
 				this.logger.info(`[${this.id}] subscribe to DataAssembly ${dataAssembly.name}`);
-				dataAssembly.on('changed', (data: any) => {
+				dataAssembly.on('changed', (data) => {
 					this.logger.info(`[${this.id}] DataAssembly changed: ${JSON.stringify(dataAssembly.toJson())}`);
 					const entry: VariableChange = {
 						timestampPOL: new Date(),
-						timestampPEA: data.lastChange!,
+						timestampPEA: (data.dataItem as BaseDataItem<any>).lastChange,
 						pea: this.id,
 						variable: dataAssembly.name,
-						value: data.value,
+						value: (data.dataItem as BaseDataItem<any>).value,
 						unit: dataAssembly.toJson().unit!
 					};
 					this.emit('variableChanged', entry);

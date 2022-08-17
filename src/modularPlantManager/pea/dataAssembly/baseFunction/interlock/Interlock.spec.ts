@@ -82,7 +82,8 @@ describe('Interlock', () => {
 		it('should subscribe successfully', async () => {
 
 			const dataAssembly = new Interlock(referenceDataAssembly.dataItems as MonBinVlvDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 
 			expect(dataAssembly.dataItems.PermEn.value).equal(false);
 			expect(dataAssembly.dataItems.Permit.value).equal(false);

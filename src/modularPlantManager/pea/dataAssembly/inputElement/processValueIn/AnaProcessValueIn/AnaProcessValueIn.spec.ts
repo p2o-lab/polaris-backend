@@ -85,7 +85,8 @@ describe('AnaProcessValueIn', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.dataItems.VExt.value).equal(0);
 			expect(dataAssembly.dataItems.VUnit.value).equal(0);
@@ -97,7 +98,8 @@ describe('AnaProcessValueIn', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			await dataAssembly.setParameter(1,'VExt');

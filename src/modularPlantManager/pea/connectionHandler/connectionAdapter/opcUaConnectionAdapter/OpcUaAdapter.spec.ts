@@ -25,10 +25,10 @@
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
-import {MockupServer} from '../../../_utils';
+import {MockupServer} from '../../../../_utils';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {OpcUaAdapter} from './OpcUaAdapter';
-import {StringViewMockup} from '../../dataAssembly/indicatorElement/StringView/StringView.mockup';
+import {StringViewMockup} from '../../../dataAssembly/indicatorElement/StringView/StringView.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -72,9 +72,9 @@ describe('OpcUaAdapter', () => {
 		it('should connect to a opc ua test server and recognize a shutdown of this server', async () => {
 			const opcUaAdapter = new OpcUaAdapter({endpoint: mockupServer.endpoint});
 			await opcUaAdapter.initialize();
-			const info = opcUaAdapter.getAdapterInfo();
+			const info = opcUaAdapter.getConnectionAdapterInfo();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 			expect(opcUaAdapter.connected).to.equal(true);
 
 			await new Promise<void>((resolve) => {
@@ -90,16 +90,16 @@ describe('OpcUaAdapter', () => {
 		it('should add and remove Nodes to connection for monitoring', async () => {
 			const opcUaAdapter = new OpcUaAdapter({endpoint: mockupServer.endpoint});
 			await opcUaAdapter.initialize();
-			const info = opcUaAdapter.getAdapterInfo();
+			const info = opcUaAdapter.getConnectionAdapterInfo();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'Text')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).to.equal(1);
+			expect(opcUaAdapter.monitoredDataItemCount()).to.equal(1);
 			opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'WQC')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).to.equal(2);
-			opcUaAdapter.clearMonitoredNodes();
-			expect(opcUaAdapter.monitoredNodesCount()).to.equal(0);
+			expect(opcUaAdapter.monitoredDataItemCount()).to.equal(2);
+			opcUaAdapter.clearMonitoredDataItems();
+			expect(opcUaAdapter.monitoredDataItemCount()).to.equal(0);
 			await opcUaAdapter.disconnect();
 		});
 
@@ -110,12 +110,12 @@ describe('OpcUaAdapter', () => {
 			expect(opcUaAdapter.connected).to.equal(false);
 
 			await opcUaAdapter.initialize();
-			const info = opcUaAdapter.getAdapterInfo();
+			const info = opcUaAdapter.getConnectionAdapterInfo();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 			expect(opcUaAdapter.connected).to.equal(true);
 
-			await opcUaAdapter.readNode(options.dataItems.find(d => d.name === 'Text')!.cIData!)
+			await opcUaAdapter.read(options.dataItems.find(d => d.name === 'Text')!.cIData!)
 				.then((result) => expect(result?.value.value).to.equal('dummyText'));
 			await opcUaAdapter.disconnect();
 		});
@@ -123,44 +123,44 @@ describe('OpcUaAdapter', () => {
 		it('should work after reconnection', async () => {
 			const opcUaAdapter = new OpcUaAdapter({endpoint: mockupServer.endpoint});
 			await opcUaAdapter.initialize();
-			const info = opcUaAdapter.getAdapterInfo();
+			const info = opcUaAdapter.getConnectionAdapterInfo();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 
 			const eventName1 = opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'Text')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).to.equal(1);
+			expect(opcUaAdapter.monitoredDataItemCount()).to.equal(1);
 			opcUaAdapter.startMonitoring().then();
 			await new Promise(resolve => opcUaAdapter.on('monitoredNodeChanged', resolve));
 			await opcUaAdapter.disconnect();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 			const eventName2 = opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'Text')!.cIData!);
 			expect(eventName1).to.equal(eventName2);
 			opcUaAdapter.startMonitoring().then();
 			await new Promise((resolve) => opcUaAdapter.on('monitoredNodeChanged', resolve));
-			expect(opcUaAdapter.monitoredNodesCount()).to.equal(1);
+			expect(opcUaAdapter.monitoredDataItemCount()).to.equal(1);
 		}).timeout(4000);
 
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const opcUaAdapter = new OpcUaAdapter({endpoint: mockupServer.endpoint});
 			await opcUaAdapter.initialize();
-			const info = opcUaAdapter.getAdapterInfo();
+			const info = opcUaAdapter.getConnectionAdapterInfo();
 			expect(opcUaAdapter.connected).to.equal(false);
-			await opcUaAdapter.connect({endpointId: info.endpoints[0].id});
+			await opcUaAdapter.connect({type: 'opcua', requestedEndpointId: info.endpoints[0].id});
 			expect(opcUaAdapter.connected).to.equal(true);
 
 			opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'Text')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).equals(1);
+			expect(opcUaAdapter.monitoredDataItemCount()).equals(1);
 
 			opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'Text')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).equals(1);
+			expect(opcUaAdapter.monitoredDataItemCount()).equals(1);
 
 			opcUaAdapter.addDataItemToMonitoring({nodeId: {identifier: 'nonexistant', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 
-			expect(opcUaAdapter.monitoredNodesCount()).equals(2);
+			expect(opcUaAdapter.monitoredDataItemCount()).equals(2);
 
 			opcUaAdapter.addDataItemToMonitoring(options.dataItems.find(d => d.name === 'WQC')!.cIData!);
-			expect(opcUaAdapter.monitoredNodesCount()).equals(3);
+			expect(opcUaAdapter.monitoredDataItemCount()).equals(3);
 			await opcUaAdapter.disconnect();
 		}).timeout(5000);
 

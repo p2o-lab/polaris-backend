@@ -34,11 +34,11 @@ export const peaRouter: Router = Router();
 
 
 /**
- * @api {post} /loadPEA   Load/Instantiate PEAController in ModularPlantManager
+ * @api {post} /addPEA Add PEA to ModularPlantManager
  * @apiName PostPEA
  * @apiGroup PEAController
  */
-peaRouter.post('/addPEA', async (req, res) => {
+peaRouter.post('/add', async (req, res) => {
 	catServer.info('Add PEA via PiMAd');
 	const manager: ModularPlantManager = req.app.get('manager');
 	const peaProvider: PEAProvider = req.app.get('peaProvider');
@@ -55,7 +55,7 @@ peaRouter.post('/addPEA', async (req, res) => {
 			await manager.addPEA(req.body.peaModel);
 			res.status(200).send('"Success!"');
 		} else {
-			res.status(400).send('Error: Bad body content.');
+			res.status(400).send('Error: Check body content.');
 		}
 	} catch (error) {
 		let message;
@@ -67,9 +67,9 @@ peaRouter.post('/addPEA', async (req, res) => {
 });
 
 /**
- * @api {get} Get all PEAControllers of ModularPlantManager
- * @apiName GetPEAControllers
- * @apiGroup PEAController
+ * @api {get} Get all PEA of ModularPlantManager
+ * @apiName allPEAs
+ * @apiGroup PEA
  */
 peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -87,15 +87,15 @@ peaRouter.get('/allPEAs', asyncHandler(async (req: Request, res: Response) => {
 /**
  * @api {get} /:peaId    Get PEAController
  * @apiName GetPEA
- * @apiGroup PEAController
+ * @apiGroup PEA
  * @apiParam {string} peaId    ID of PEAController to be received as json
  */
 peaRouter.get('/:peaId', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController){
-			res.status(200).send(peaController.json());
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			res.status(200).send(pea.json());
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
 		}
@@ -112,15 +112,15 @@ peaRouter.get('/:peaId', (req: Request, res: Response) => {
 /**
  * @api {get} /:peaId/dataAssemblies    Get all DataAssemblies of PEA
  * @apiName GetDataAssemblies
- * @apiGroup PEAController
- * @apiParam {string} peaId    ID of PEAController owning DataAssemblies
+ * @apiGroup PEA
+ * @apiParam {string} peaId ID of PEA owning DataAssemblies
  */
 peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController){
-			const dataAssemblies = peaController.getDataAssemblyJson();
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			const dataAssemblies = pea.getDataAssemblyJson();
 			res.status(200).send(dataAssemblies);
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
@@ -135,17 +135,17 @@ peaRouter.get('/:peaId/dataAssemblies', (req: Request, res: Response) => {
 });
 
 /**
- * @api {get} /:peaId/getConnectionSettings
- * @apiName GetConnectionSettings
- * @apiGroup PEAController
+ * @api {get} /:peaId/connectionInfo
+ * @apiName Connection info
+ * @apiGroup PEA
  * @apiParam {string} peaId
  */
-peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => {
+peaRouter.get('/:peaId/connectionInfo', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController){
-			const connectionSettings = peaController.getCurrentConnectionSettings();
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			const connectionSettings = pea.getConnectionInfo();
 			res.status(200).send(connectionSettings);
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
@@ -160,18 +160,24 @@ peaRouter.get('/:peaId/getConnectionSettings', (req: Request, res: Response) => 
 });
 
 /**
- * @api {post} /:peaId/initializeConnection
- * @apiName InitializeConnection
- * @apiGroup PEAController
+ * @api {post} /:peaId/addConnection
+ * @apiName AddConnection
+ * @apiGroup PEA
  * @apiParam {string} peaId
+ * @apiBody {adapterOption: AdapterOption}
  */
-peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/addConnection', async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController) {
-			await peaController.initializeConnection();
-			res.status(200).send();
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea) {
+			const adapterOption = req.body.adapterOption;
+			if (adapterOption){
+				pea.connectionHandler.addConnectionAdapter(adapterOption);
+				res.status(200).send();
+			} else {
+				res.status(404).send('Error: Invalid arguments.');
+			}
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
 		}
@@ -186,18 +192,50 @@ peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Respons
 
 
 /**
- * @api {post} /:peaId/connection/:handlerId/update
- * @apiName PostConnectionSettings
+ * @api {post} /:peaId/initializeConnection
+ * @apiName InitializeConnection
  * @apiGroup PEAController
+ * @apiParam {string} peaId
+ * @apiBody {}
+ */
+peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Response) => {
+	const manager: ModularPlantManager = req.app.get('manager');
+	try {
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea) {
+			const adapterIds: [] = req.body.adapterIds;
+			if (adapterIds){
+				await adapterIds.forEach( a => pea.initializeConnection(a));
+				res.status(200).send();
+			} else {
+				res.status(404).send('Error: Invalid arguments.');
+			}
+		} else {
+			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
+		}
+	} catch (error) {
+		let message;
+		if (error instanceof Error) message = error.message;
+		else message = String(error);
+		console.log(message);
+		res.status(500).send(message);
+	}
+});
+
+/**
+ * @api {post} /:peaId/updateConnection/:connectionId
+ * @apiName Update Connection
+ * @apiGroup PEA
+ * @apiParam {string} peaId
  * @apiParam {OpcUaEndpointSettings} options
  */
-peaRouter.post('/:peaId/connection/:handlerId/update', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/connection/:connectionId/update', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController){
-			peaController.updateConnectionAdapter(req.params.handlerId, req.body);
-			res.status(200).send('Successfully updated the connection settings!');
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			pea.updateConnectionAdapter(req.params.handlerId, req.body);
+			res.status(200).send('Successfully updated the connection!');
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
 		}
@@ -211,10 +249,10 @@ peaRouter.post('/:peaId/connection/:handlerId/update', asyncHandler(async (req: 
 }));
 
 /**
- * @api {get} /:peaId/download - Download PEAController options by ID
+ * @api {get} /:peaId/download - Download PEA options
  * @apiName GetPEADownload
- * @apiGroup PEAController
- * @apiParam {string} peaId    ID of PEAController to download related options.
+ * @apiGroup PEA
+ * @apiParam {string} peaId    ID of PEA to download related options.
  */
 peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -243,10 +281,10 @@ peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
-		const peaController = manager.findPEAController(req.params.peaId);
-		if (peaController){
-			await peaController.connect();
-			res.status(200).send({peaId: peaController.id, status: 'Successfully connected'});
+		const pea = manager.findPEAController(req.params.peaId);
+		if (pea){
+			await pea.connect();
+			res.status(200).send({peaId: pea.id, status: 'Successfully connected'});
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
 		}

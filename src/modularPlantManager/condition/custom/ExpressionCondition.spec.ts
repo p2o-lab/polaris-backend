@@ -61,7 +61,8 @@ describe('ExpressionCondition', () => {
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			const peaModel: PEAModel = getEmptyPEAModel();
 			peaModel.name = 'PEATestServer';
 			peaModel.pimadIdentifier = 'PEATestServer';

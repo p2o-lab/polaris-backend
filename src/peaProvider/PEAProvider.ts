@@ -49,7 +49,7 @@ export class PEAProvider {
 	public async getPEAFromPiMAd(peaId: string): Promise<PEAModel> {
 
 		//Todo create mockup for test purpose
-		if(peaId === 'test') return peaModel;
+		if(peaId === 'test') return Array.isArray(peaModel)? peaModel[0] : peaModel;
 
 		const response = await fetch(`http://localhost:3002/api/${peaId}`);
 		return await response.json() as PEAModel;

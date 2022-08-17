@@ -77,7 +77,8 @@ describe('ScaleSettings', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new ScaleSettings(referenceDataAssembly.dataItems as DIntManDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.VSclMin.value).equal(0);
 			expect(baseFunction.dataItems.VSclMax.value).equal(0);

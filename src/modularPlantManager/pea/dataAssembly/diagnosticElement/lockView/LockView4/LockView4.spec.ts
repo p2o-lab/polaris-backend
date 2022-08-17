@@ -68,7 +68,8 @@ describe('LockView4', () => {
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 		});
 
 		afterEach(async function () {
@@ -81,7 +82,8 @@ describe('LockView4', () => {
 
 			const dataAssembly = new LockView4(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => (dataAssembly.dataItems.In4Txt as BaseDataItem<any>).on('changed', resolve)));
 
 			expect(dataAssembly.wqc.WQC).equal(0);

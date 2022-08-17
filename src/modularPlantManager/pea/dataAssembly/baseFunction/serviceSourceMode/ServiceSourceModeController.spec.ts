@@ -85,7 +85,8 @@ describe('ServiceSourceMode', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new ServiceSourceModeController(referenceDataAssembly.dataItems as AnaServParamDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
 			expect(baseFunction.dataItems.SrcChannel.value).equal(false);
@@ -115,7 +116,8 @@ describe('ServiceSourceMode', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new ServiceSourceModeController(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
@@ -168,7 +170,8 @@ describe('ServiceSourceMode', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new ServiceSourceModeController(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 

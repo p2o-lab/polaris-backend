@@ -70,7 +70,8 @@ describe('ServParam', () => {
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 		});
 
 		afterEach(async function () {
@@ -83,7 +84,8 @@ describe('ServParam', () => {
 
 			const dataAssembly: ServParam = new ServParam(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			
 			// expect(dataAssembly.dataItems.WQC.value).equal(0);

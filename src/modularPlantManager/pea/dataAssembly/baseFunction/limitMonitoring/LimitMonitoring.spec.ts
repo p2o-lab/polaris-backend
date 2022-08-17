@@ -103,7 +103,8 @@ describe('LimitMonitoring', () => {
 		it('should subscribe successfully', async () => {
 
 			const limitMonitoring = new LimitMonitoring(referenceDataAssembly.dataItems as AnaMonDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => limitMonitoring.on('changed', resolve)));
 			
 			expect(limitMonitoring.dataItems.VAHEn.value).to.equal(false);

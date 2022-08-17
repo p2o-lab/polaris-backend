@@ -96,7 +96,8 @@ describe('AnaVlv', () => {
 
 			const dataAssembly = new AnaVlv(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).equal(0);

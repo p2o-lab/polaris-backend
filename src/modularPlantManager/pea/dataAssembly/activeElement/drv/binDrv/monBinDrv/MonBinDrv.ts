@@ -43,6 +43,7 @@ export class MonBinDrv extends BinDrv {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}	
 	}
 

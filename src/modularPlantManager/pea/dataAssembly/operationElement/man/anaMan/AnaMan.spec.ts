@@ -90,7 +90,7 @@ describe('AnaMan', () => {
 
 			const dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as AnaMan;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.OSLevel.value).to.equal(0);

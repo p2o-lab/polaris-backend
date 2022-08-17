@@ -32,10 +32,10 @@ import {AnaViewMockup} from '../../../modularPlantManager/pea/dataAssembly/indic
 import {ServiceControlMockup} from '../../../modularPlantManager/pea/dataAssembly/serviceControl/ServiceControl.mockup';
 import {expect} from 'chai';
 import { PEAModel} from '@p2olab/pimad-interface';
-import * as peaModelFileContent from 'src/modularPlantManager/peaModel.spec.json';
+import * as peaModelFileContent from '../../../modularPlantManager/peaModel.spec.json';
 import {getEmptyPEAModel} from '../../../modularPlantManager/pea/PEA.mockup';
 import {PEAProvider} from '../../../peaProvider/PEAProvider';
-import {OpcUaEndpointSetting} from '@p2olab/polaris-interface';
+import {OpcUaAdapterOptions} from '@p2olab/polaris-interface';
 
 const peaModel = peaModelFileContent as unknown as PEAModel;
 
@@ -81,8 +81,14 @@ describe('PEARoutes', () => {
 				.expect('Content-Type', /json/)
 				.expect(200)
 				.expect([{
-					name: 'test', id: 'test', pimadIdentifier: 'test', description: '', endpoint: 'localhost',
-					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
+					name: 'test',
+					id: peaController.id,
+					pimadIdentifier: 'PEATestServer',
+					description: '',
+					connectionInfo: peaController.getConnectionInfo(),
+					services: [],
+					processValues: [],
+					protected: false
 				}]);
 		});
 	});
@@ -94,8 +100,14 @@ describe('PEARoutes', () => {
 			await request(app).get(`/api/pea/${peaController.id}`)
 				.expect(200)
 				.expect({
-					name: 'test', id: 'test', pimadIdentifier: 'test', description: '', endpoint: 'localhost',
-					hmiUrl: '', connected: false, services: [], processValues: [], protected: false
+					name: 'test',
+					id: peaController.id,
+					pimadIdentifier: 'PEATestServer',
+					description: '',
+					connectionInfo: peaController.getConnectionInfo(),
+					services: [],
+					processValues: [],
+					protected: false
 				});
 		});
 		it('should throw 404 when get not existing pea', async () => {
@@ -122,45 +134,42 @@ describe('PEARoutes', () => {
 
 	context('/api/pea/loadPEA', () => {
 		it('should fail while loading pea without content', async () => {
-			await request(app).post('/api/pea/loadPEA')
+			await request(app).post('/api/pea/add')
 				.send(null)
 				.expect(400)
-				.expect('Error: No id provided in request');
+				.expect('Error: Check body content.');
 		});
 
-		it('should load PEAController', async () => {
-			const peaModel = await manager.peaProvider.getPEAFromPiMAd('test');
-			const identifier = peaModel.pimadIdentifier;
-			await request(app).post('/api/pea/loadPEA')
-				.send({id: identifier})
+		it('should add PEA', async () => {
+			await request(app).post('/api/pea/add', )
+				.send({id: 'test'})
 				.expect(200);
 		});
 	});
 
-	context('Connection Settings', () => {
-		it('should get connection settings', async () => {
+	context('Connection', () => {
+		it('should get connection info', async () => {
 			const peaController: PEA = new PEA(peaModelDummy);
 			manager.peas.push(peaController);
-			await request(app).get(`/api/pea/${peaController.id}/getConnectionSettings`)
+			await request(app).get(`/api/pea/${peaController.id}/connectionInfo`)
 				.expect(200)
 				.expect({
-					endpointUrl: 'localhost',
+					adapterInfo: [],
+					id: peaController.id,
 					connected: false,
-					monitoredItemsCount: 0,
-					securitySettings: { securityPolicy: 'None', securityMode: 'None' },
-					authenticationSettings: 'Anonymous'});
+					name: 'GenericConnectionHandler'
 		});
 
 		it('getConnectionSettings should fail with invalid peaId', async () => {
-			await request(app).get('/api/pea/xyz/getConnectionSettings')
+			await request(app).get('/api/pea/xyz/connectionInfo')
 				.expect(404)
 				.expect(/Error: PEA with id xyz not found/);
 		});
 
-		it('should update connection settings', async () => {
+		it('should update connection', async () => {
 			const peaController: PEA = new PEA(peaModelDummy);
 			manager.peas.push(peaController);
-			await request(app).get(`/api/pea/${peaController.id}/getConnectionSettings`)
+			await request(app).get(`/api/pea/${peaController.id}/connectionInfo`)
 				.expect(200)
 				.expect({
 					endpointUrl: 'localhost',
@@ -170,7 +179,7 @@ describe('PEARoutes', () => {
 					authenticationSettings: 'Anonymous'
 				});
 
-			const options: OpcUaEndpointSetting = {endpointId: 'localhost:4334'};
+			const options: OpcUaAdapterOptions = {endpoint: 'localhost:4334'};
 			await request(app).post(`/api/pea/${peaController.id}/updateConnectionSettings`)
 				.send(options)
 				.expect(200)
@@ -188,7 +197,7 @@ describe('PEARoutes', () => {
 		});
 
 		it('updateServerSettings should fail with invalid peaId', async () => {
-			const options: OpcUaEndpointSetting = {endpointId: 'localhost:4334'};
+			const options: OpcUaAdapterOptions = {endpoint: 'localhost:4334'};
 			await request(app).post('/api/pea/xyz/updateConnectionSettings')
 				.send(options)
 				.expect(404)
@@ -301,5 +310,6 @@ describe('PEARoutes', () => {
 					.expect('Service not found');
 			});
 		});
+	});
 	});
 });

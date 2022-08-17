@@ -23,33 +23,14 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
-import {ServParam} from '../ServParam';
-import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
-import {keys} from 'ts-transformer-keys';
-import {StringServParamDataItems} from '@p2olab/pimad-types';
+import {AdapterOptions, OpcUaAdapterOptions} from '@p2olab/polaris-interface';
+import {ConnectionAdapter} from './ConnectionAdapter';
+import {OpcUaAdapter} from './opcUaConnectionAdapter/OpcUaAdapter';
 
-export class StringServParam extends ServParam {
+export class ConnectionAdapterFactory {
 
-	public readonly dataItems!: StringServParamDataItems;
+	static create(options: AdapterOptions): ConnectionAdapter {
 
-	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
-		super(options, connectionHandler);
-
-		if (initial) {
-			const keyList = keys<typeof this.dataItems>();
-			this.initializeDataItems(options, keyList);
-			this.initializeBaseFunctions();
-			this.subscribe().then();
-		}	
-
-		this.defaultReadDataItem = this.dataItems.VOut;
-		this.defaultReadDataItemType = 'string';
-		this.defaultWriteDataItem = this.dataItems.VExt;
-		this.defaultWriteDataItemType = 'string';
-	}
-
-	protected initializeBaseFunctions() {
-		super.initializeBaseFunctions();
+		return new OpcUaAdapter(options as OpcUaAdapterOptions);
 	}
 }

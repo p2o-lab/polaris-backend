@@ -44,6 +44,7 @@ export class DIntProcessValueIn extends InputElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}
 
 		this.defaultReadDataItem = this.dataItems.VExt;

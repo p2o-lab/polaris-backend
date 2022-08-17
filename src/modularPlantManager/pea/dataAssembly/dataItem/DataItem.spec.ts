@@ -124,7 +124,8 @@ describe('DataItem', () => {
 				dataItemModel.cIData = ciOptions;
 
 				const dataItem = DataItemFactory.create<boolean>({dataItemModel: dataItemModel, dataType: 'boolean', connectionHandler: connectionHandler});
-				await connectionHandler.connect(adapterId);
+				await connectionHandler.connectAdapter(adapterId);
+				await connectionHandler.startMonitoring(adapterId);
 				await new Promise((resolve) => dataItem.on('changed', resolve));
 				expect(dataItem.value).to.equal(false);
 			});

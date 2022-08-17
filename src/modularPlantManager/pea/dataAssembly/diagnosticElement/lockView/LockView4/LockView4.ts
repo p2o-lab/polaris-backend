@@ -40,6 +40,7 @@ export class LockView4 extends DiagnosticElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}	
 
 		this.defaultReadDataItem = this.dataItems.Out;

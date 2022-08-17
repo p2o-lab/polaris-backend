@@ -41,7 +41,7 @@ export class BinView extends IndicatorElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
-			this.setDefaultReadDataItem();
+			this.subscribe().then();
 		}
 	}
 

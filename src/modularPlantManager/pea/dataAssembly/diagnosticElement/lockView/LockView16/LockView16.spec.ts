@@ -68,7 +68,8 @@ describe('LockView16', () => {
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 		});
 
 		afterEach(async function () {
@@ -81,7 +82,8 @@ describe('LockView16', () => {
 
 			const dataAssembly = new LockView16(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => (dataAssembly.dataItems.In16Txt as BaseDataItem<string>).on('changed', resolve)));
 			
 			expect(dataAssembly.wqc.WQC).equal(0);

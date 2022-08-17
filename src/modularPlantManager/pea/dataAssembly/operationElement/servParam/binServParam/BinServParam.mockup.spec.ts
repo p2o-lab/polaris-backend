@@ -117,7 +117,8 @@ describe('BinServParamMockup', () => {
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
             adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-            await connectionHandler.connect(adapterId);
+            await connectionHandler.connectAdapter(adapterId);
+            await connectionHandler.startMonitoring(adapterId);
         });
 
         afterEach(async () => {

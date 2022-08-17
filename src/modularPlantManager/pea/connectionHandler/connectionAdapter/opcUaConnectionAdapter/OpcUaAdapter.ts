@@ -41,13 +41,12 @@ import {
 } from 'node-opcua';
 import {timeout} from 'promise-timeout';
 import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
-import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';
 import {DataType} from 'node-opcua-client';
-import {IDProvider} from '../../../_utils';
-import {catOpcUA} from '../../../../logging';
+import {IDProvider} from '../../../../_utils';
 import {CIData} from '@p2olab/pimad-interface';
-import {OpcUaAdapterInfo, OpcUaEndpointInfo, OpcUaEndpointSetting, OpcUaUserSetting} from '@p2olab/polaris-interface';
+import {AdapterConnectOptions, OpcUaAdapterInfo, OpcUaAdapterOptions, OpcUaEndpointInfo, OpcUaEndpointOption, OpcUaUserCredentials} from '@p2olab/polaris-interface';
+import {ConnectionAdapter} from '../ConnectionAdapter';
 
 interface EndpointInfo {
 	endpointUrl: string;
@@ -55,45 +54,9 @@ interface EndpointInfo {
 	securityPolicy?: string;
 }
 
-export interface OpcUaConnectionAdapterOptions {
-	endpoint?: string;
-	name?: string;
-}
+export class OpcUaAdapter extends ConnectionAdapter {
 
-
-/**
- * Events emitted by {@link OpcUaAdapter}
- */
-interface OpcUaConnectionAdapterEvents {
-	/**
-	 * when target e.g. PEAController successfully connects to POL
-	 * @event connected
-	 */
-	connected: void;
-	/**
-	 * when target e.g. PEAController is disconnected from POL
-	 * @event disconnected
-	 */
-	disconnected: void;
-	/**
-	 * when monitored Node changes
-	 * @event monitoredItemChanged
-	 */
-	monitoredNodeChanged: {
-		monitoredNodeId: string;
-		value: string | number | boolean;
-		dataType: string;
-		timestamp: Date;
-	};
-}
-
-type OpcUaConnectionAdapterEmitter = StrictEventEmitter<EventEmitter, OpcUaConnectionAdapterEvents>;
-
-export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapterEmitter) {
-
-	public readonly id = IDProvider.generateIdentifier();
-	public readonly name: string = 'OpcUaAdapter';
-	private readonly logger: Category = catOpcUA;
+	public readonly name: string = 'OpcUaConnectionAdapter';
 
 	// Endpoint related topics
 	private _endpoint: string | undefined;
@@ -132,25 +95,23 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 
 	}
 
-	constructor(options?: OpcUaConnectionAdapterOptions) {
-		super();
+	constructor(options?: OpcUaAdapterOptions) {
+		super(options);
 		if (options) {
 			this.endpoint = options.endpoint;
-			if (options.name) {
-				this.name = options.name;
-			}
 		}
 	}
 
 
-	public async initialize(options?: OpcUaConnectionAdapterOptions): Promise<void> {
+	public async initialize(options?: OpcUaAdapterOptions): Promise<void> {
 		if (options) {
 			this.endpoint = options.endpoint;
 		}
 		await this.updateAvailableEndpoints();
+		this.emit('configChanged', {info: this.getConnectionAdapterInfo()});
 	}
 
-	async update(options: OpcUaConnectionAdapterOptions,) {
+	async update(options: OpcUaAdapterOptions) {
 		await this.disconnect();
 		await this.initialize(options);
 	}
@@ -196,14 +157,27 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	 * Open connection to server and establish session
 	 * @returns {Promise<void>}
 	 */
-	public async connect(endpointConfig: OpcUaEndpointSetting): Promise<void> {
+	public async connect(connectOptions?: OpcUaEndpointOption): Promise<void> {
+		if (this.availableEndpoints.size === 0) {
+			await this.initialize();
+		}
 		if (this.connected) {
 			this.logger.debug(`[${this.id}] Already connected`);
-		} else {
-			this.currentEndpointId = endpointConfig.endpointId;
+		} else if (connectOptions) {
+			this.currentEndpointId = connectOptions.requestedEndpointId;
 			this.createClient();
 			await this.connectClient();
-			await this.createSession(endpointConfig.userSettings);
+			await this.createSession(connectOptions.userCredentials);
+			await this.readNameSpaceArray();
+			this.logger.info(`[${this.id}] Successfully connected`);
+			this.emit('connected');
+
+		} else {
+			const [firstKey] = this.availableEndpoints.keys(); //TODO: Develop Connect Strategy in case none was set
+			this.currentEndpointId = firstKey;
+			this.createClient();
+			await this.connectClient();
+			await this.createSession();
 			await this.readNameSpaceArray();
 			this.logger.info(`[${this.id}] Successfully connected`);
 			this.emit('connected');
@@ -229,7 +203,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	 * read the value of provided NodeID information
 	 * @returns {Promise<DataValue | undefined>}
 	 */
-	public async readNode(ciData: CIData): Promise<DataValue | undefined> {
+	public async read(ciData: CIData): Promise<DataValue | undefined> {
 		if (!this.connected) {
 			return undefined;
 		}
@@ -252,7 +226,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	 * Write the provided value to provided NodeID information
 	 * @returns {Promise<DataValue | undefined>}
 	 */
-	public async writeNode(ciData: CIData, value: number | string | boolean): Promise<void> {
+	public async write(ciData: CIData, value: number | string | boolean): Promise<void> {
 		if (!this.connected) {
 			throw new Error('Can not write node since OPC UA connection is not established');
 		}
@@ -296,7 +270,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 	 */
 	public addDataItemToMonitoring(ciData: CIData, identifier?: string): string {
 		let monitoredItemKey = '';
-		const existingMonitoredItemKey: undefined | string = this.findAlreadyMonitoredNode(ciData);
+		const existingMonitoredItemKey: undefined | string = this.findAlreadyMonitoredDataItem(ciData);
 		if (!existingMonitoredItemKey) {
 			monitoredItemKey = identifier || IDProvider.generateIdentifier();
 			this.nodes.set(monitoredItemKey, ciData);
@@ -307,7 +281,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		return monitoredItemKey;
 	}
 
-	private findAlreadyMonitoredNode(ciData: CIData): string | undefined {
+	private findAlreadyMonitoredDataItem(ciData: CIData): string | undefined {
 		let monitoredNodeKey: string | undefined = undefined;
 		for (const [key, value] of this.nodes) {
 			if (value.nodeId.identifier === ciData.nodeId.identifier && value.nodeId.namespaceIndex === ciData.nodeId.namespaceIndex) {
@@ -374,11 +348,11 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		this.monitoringActive = false;
 	}
 
-	public monitoredNodesCount(): number {
+	public monitoredDataItemCount(): number {
 		return this.nodes.size;
 	}
 
-	public clearMonitoredNodes(): void{
+	public clearMonitoredDataItems(): void{
 		this.nodes.clear();
 	}
 
@@ -431,7 +405,7 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		}
 	}
 
-	private async createSession(userIdentityOptions?: OpcUaUserSetting): Promise<void> {
+	private async createSession(userIdentityOptions?: OpcUaUserCredentials): Promise<void> {
 		if (!this.client) {
 			throw new Error('Client should exist');
 		}
@@ -574,23 +548,23 @@ export class OpcUaAdapter extends (EventEmitter as new() => OpcUaConnectionAdapt
 		return parseInt(url.port) <= 65535;
 	}
 
-	public getAdapterInfo(): OpcUaAdapterInfo{
+	public getConnectionAdapterInfo(): OpcUaAdapterInfo{
 		const endpoints: OpcUaEndpointInfo[] = [];
 		this.availableEndpoints.forEach((value, key) => {
 			endpoints.push({
-				endpointUrl: value.endpointUrl,
 				id: key,
 				securityMode: UserTokenType[value.securityMode as keyof typeof UserTokenType].toString(),
 				securityPolicy: value.securityPolicy?.split('#').pop()
 			});
 		});
 		return {
-			type: 'OpcUa',
+			type: 'opcua',
 			connected: this.connected,
 			currentEndpointId: this.currentEndpointId,
 			endpoints: endpoints,
+			endpointUrl: this.endpoint || '',
 			id: this.id,
-			monitoredItemsCount: this.monitoredNodesCount(),
+			monitoredItemsCount: this.monitoredDataItemCount(),
 			monitoringActive: this.monitoringActive,
 			name: this.name
 		};

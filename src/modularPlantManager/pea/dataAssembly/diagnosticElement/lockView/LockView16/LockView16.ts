@@ -37,9 +37,10 @@ export class LockView16  extends LockView8 {
 		super(options, connectionHandler);
 
 		if (initial) {
-						const keyList = keys<typeof this.dataItems>();
+			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}
 	}
 

@@ -1,1 +1,1 @@
-export * from './OpcUaAdapter';
+export * from './opcUaConnectionAdapter/OpcUaAdapter';

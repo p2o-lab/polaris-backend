@@ -40,6 +40,7 @@ export class BinServParam extends ServParam {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}	
 
 		this.defaultReadDataItem = this.dataItems.VOut;

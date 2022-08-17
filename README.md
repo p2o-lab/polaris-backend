@@ -1,9 +1,9 @@
 # polaris-backend
 
 *Polaris* is a Process Orchestration Layer application for controlling process equipment assemblies (PEAController) in the context of modular production in process industries. Thus, it follows the VDI/VDE/NAMUR 2658 standards.
-*polaris-backend* is a NodeJs application which can be controlled via REST. Furthermore it provides recent state changes via websockets. For testing and debugging purposes, polaris-backend provides also a testserver which behaves like a PEAController.
+*polaris-backend* is a NodeJs application which can be controlled via REST. Furthermore, it provides recent state changes via websockets. For testing and debugging purposes, polaris-backend provides also a test server which behaves like a PEAController.
 
-A HTML user interface for this project is provided via the [polaris-frontend](https://github.com/p2o-lab/polaris-frontend) project.
+An HTML user interface for this project is provided via the [polaris-frontend](https://github.com/p2o-lab/polaris-frontend) project.
 
 [![Build Status](https://cloud.drone.io/api/badges/p2o-lab/polaris-backend/status.svg?ref=refs/heads/develop)](https://cloud.drone.io/p2o-lab/polaris-backend "Build status")
 [![Docker Badge](https://img.shields.io/docker/pulls/p2olab/polaris-backend)](https://hub.docker.com/r/p2olab/polaris-backend "Docker image on docker.hub")

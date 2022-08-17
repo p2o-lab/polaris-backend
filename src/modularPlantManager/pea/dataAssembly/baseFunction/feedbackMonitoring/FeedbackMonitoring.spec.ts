@@ -80,7 +80,8 @@ describe('FeedbackMonitoring', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new FeedbackMonitoring(referenceDataAssembly.dataItems as MonBinVlvDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.dataItems.MonEn.value).equal(false);
 			expect(baseFunction.dataItems.MonSafePos.value).equal(false);

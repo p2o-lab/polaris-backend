@@ -110,7 +110,7 @@ describe('AnaManMockup', () => {
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
             adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-            await connectionHandler.connect(adapterId);
+            await connectionHandler.connectAdapter(adapterId);
         });
 
         afterEach(async () => {

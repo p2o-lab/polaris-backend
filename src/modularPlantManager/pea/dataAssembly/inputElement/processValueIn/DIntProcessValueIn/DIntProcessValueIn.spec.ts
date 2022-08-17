@@ -75,7 +75,8 @@ describe('DIntProcessValueIn', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			dataAssembly = DataAssemblyFactory.create(options, connectionHandler) as DIntProcessValueIn;
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 		});
 

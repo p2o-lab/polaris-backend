@@ -41,6 +41,7 @@ export class BinDrv extends Drv {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}	
 	}
 

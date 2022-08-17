@@ -89,7 +89,8 @@ describe('OpMode', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new OpMode(referenceDataAssembly.dataItems as AnaServParamDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
 			expect(baseFunction.dataItems.StateChannel.value).equal(false);
@@ -122,7 +123,8 @@ describe('OpMode', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new OpMode(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
@@ -191,7 +193,8 @@ describe('OpMode', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new OpMode(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 
@@ -248,7 +251,8 @@ describe('OpMode', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			baseFunction = new OpMode(this.dataItems);
 			await baseFunction.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 		});
 

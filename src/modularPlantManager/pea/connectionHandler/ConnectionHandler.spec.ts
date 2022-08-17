@@ -46,7 +46,7 @@ describe('ConnectionHandler', () => {
 		const connectionHandler = new ConnectionHandler();
 		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(''));
 		expect(connectionHandler.connectionEstablished).to.equal(false);
-		await expect(connectionHandler.connect(adapterId)).to.be.rejected;
+		await expect(connectionHandler.connectAdapter(adapterId)).to.be.rejected;
 		expect(connectionHandler.connectionEstablished).to.equal(false);
 	}).timeout(5000);
 
@@ -59,7 +59,8 @@ describe('ConnectionHandler', () => {
 		const connectionHandler = new ConnectionHandler();
 		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 		expect(connectionHandler.connectionEstablished).to.equal(false);
-		await connectionHandler.connect(adapterId);
+		await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 		expect(connectionHandler.connectionEstablished).to.equal(true);
 
 		await new Promise<void>((resolve) => {
@@ -94,7 +95,7 @@ describe('ConnectionHandler', () => {
 		it('should add and remove Nodes to connectionHandler for monitoring', async () => {
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger1', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
@@ -111,7 +112,8 @@ describe('ConnectionHandler', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			expect(connectionHandler.connectionEstablished).to.equal(true);
 
 			await connectionHandler.readDataItemValue({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}})
@@ -124,10 +126,12 @@ describe('ConnectionHandler', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise(resolve => connectionHandler.on('monitoredDataItemChanged', resolve));
 
 			await connectionHandler.disconnect();
@@ -136,20 +140,24 @@ describe('ConnectionHandler', () => {
 		it('should work after reconnection', async () => {
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 
 			const eventName1 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise(resolve => connectionHandler.on('monitoredDataItemChanged', resolve));
 			await connectionHandler.disconnect();
 
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 
 			const eventName2 = connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(eventName1).to.equal(eventName2);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve) => connectionHandler.on('monitoredDataItemChanged', resolve));
 			expect(connectionHandler.monitoredDataItemsCount()).to.equal(1);
 		}).timeout(4000);
@@ -159,7 +167,8 @@ describe('ConnectionHandler', () => {
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			expect(connectionHandler.connectionEstablished).to.equal(false);
 
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			expect(connectionHandler.connectionEstablished).to.equal(true);
 
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
@@ -180,7 +189,8 @@ describe('ConnectionHandler', () => {
 
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'Service1.OpMode', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).equals(3);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await connectionHandler.disconnect();
 
 		}).timeout(5000);
@@ -188,7 +198,8 @@ describe('ConnectionHandler', () => {
 		it('should connect with username and password', async () => {
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await connectionHandler.disconnect();
 		});
 

@@ -78,7 +78,8 @@ describe('UnitSettings', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new UnitSettings(referenceDataAssembly.dataItems as DIntManDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 
 			expect(baseFunction.dataItems.VUnit.value).to.equal(0);

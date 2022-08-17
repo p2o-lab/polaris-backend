@@ -45,8 +45,7 @@ export const catDataAssembly = new Category('dataAssembly', catPEA);
 export const catDataItem = new Category('DataItem');
 
 export const catConnection = new Category('Connection');
-export const catOpcUA = new Category('OpcUA');
-export const catOpcUaDataItem = new Category('OpcUaDataItem', catDataItem);
+export const catConnectionAdapter = new Category('ConnectionAdapter');
 
 export const catPOLService = new Category('POLService');
 export const catAggregatedService = new Category('AggregatedService', catPOLService);

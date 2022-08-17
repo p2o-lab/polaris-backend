@@ -82,7 +82,7 @@ describe('AnaDrvMockup', () => {
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
             const resultID = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-            await connectionHandler.connect(resultID);
+            await connectionHandler.connectAdapter(resultID);
         });
 
         afterEach(async () => {

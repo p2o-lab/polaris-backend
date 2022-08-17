@@ -83,7 +83,8 @@ describe('BinProcessValueIn', () => {
 		it('should subscribe successfully', async () => {
 			const dataAssembly = new BinProcessValueIn(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			expect(dataAssembly.dataItems.VExt.value).equal(false);
@@ -94,7 +95,8 @@ describe('BinProcessValueIn', () => {
 		it('set Parameter', async () => {
 			const dataAssembly = new BinProcessValueIn(options, connectionHandler, true);
 			await dataAssembly.subscribe();
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 
 			await dataAssembly.setParameter(true,'VExt');

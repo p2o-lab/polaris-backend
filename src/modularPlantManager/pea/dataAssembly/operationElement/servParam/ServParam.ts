@@ -45,6 +45,7 @@ export class ServParam extends OperationElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}
 	}
 

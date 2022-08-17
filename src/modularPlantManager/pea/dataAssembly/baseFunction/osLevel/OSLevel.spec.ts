@@ -72,7 +72,8 @@ describe('OSLevel', () => {
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 		});
 
 		afterEach(async function () {
@@ -84,7 +85,8 @@ describe('OSLevel', () => {
 		it('should subscribe successfully', async () => {
 
 			const baseFunction = new OSLevel(referenceDataAssembly.dataItems as BinMonDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => baseFunction.on('changed', resolve)));
 			expect(baseFunction.osLevel).to.equal(0);
 		}).timeout(5000);

@@ -101,7 +101,8 @@ describe('WQC', () => {
 
 		it('should subscribe successfully', async () => {
 			const dataAssembly = new WQC(referenceDataAssembly.dataItems as AnaViewDataItems);
-			await connectionHandler.connect(adapterId);
+			await connectionHandler.connectAdapter(adapterId);
+			await connectionHandler.startMonitoring(adapterId);
 			await new Promise((resolve => dataAssembly.on('changed', resolve)));
 			expect(dataAssembly.WQC).to.equal(0);
 		}).timeout(5000);

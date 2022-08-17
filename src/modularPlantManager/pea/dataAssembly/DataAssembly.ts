@@ -73,8 +73,8 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}
-		this.subscribe().then();
 	}
 
 	protected initializeDataItems(options:DataAssemblyModel, keyList: string[]){

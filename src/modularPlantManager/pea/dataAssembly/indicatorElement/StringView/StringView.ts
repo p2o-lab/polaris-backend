@@ -42,6 +42,7 @@ export class StringView extends IndicatorElement {
 			const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
+			this.subscribe().then();
 		}
 
 		(this.dataItems.WQC as BaseDataItem<number>).on('changed', (data) => {});

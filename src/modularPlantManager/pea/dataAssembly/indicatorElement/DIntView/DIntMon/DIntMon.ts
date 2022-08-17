@@ -44,6 +44,7 @@ export class DIntMon extends DIntView {
             const keyList = keys<typeof this.dataItems>();
 			this.initializeDataItems(options, keyList);
             this.initializeBaseFunctions();
+			this.subscribe().then();
         }
     }
 
