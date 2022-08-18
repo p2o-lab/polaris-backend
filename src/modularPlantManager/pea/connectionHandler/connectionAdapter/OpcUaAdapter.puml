@@ -26,34 +26,65 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class OpcUaConnectionAdapter{
-	+ //readonly// endpoint: string
+class OpcUaAdapter{
+
 	+ //readonly// id: string
-	+ //readonly// username: string | undefined
-    + //readonly// password: string | undefined
+	+ //readonly// name: string
+	+ //readonly// logger: Category
+
+	- _endpoint: string | undefined
+	- currentEndpointId: string | undefined
+	- availableEndpoints: Map<string, EndpointInfo>
+
+	- namespaceArray: string[]
 	- session: ClientSession | undefined
 	- client: OPCUAClient | undefined
 	- subscription: ClientSubscription | undefined
-	- namespaceArray!: string[]
-	- //readonly// items: Map<string, string>
-	- //readonly// logger: Category
+	- monitoringActive = false
 
-	+ OpcUaConnectionAdapter(targetId: string, endpoint: string, username?: string, password?: string) {
-	+ //async// connect(): Promise<void>
-    + //async// disconnect(): Promise<void>
-    + isConnected(): boolean
-    + //async// readNode(nodeId: string, namespaceUri: string): Promise<DataValue | undefined>
-    + addOpcUaNode(nodeId: string, namespaceUri: string): string
-    + //async// startListening(samplingInterval=100): Promise<EventEmitter>
-    + //async// writeNode(nodeId: string, namespaceUri: string, value: number | string | boolean, dataType: string): Promise<void>
-    + monitoredItemSize(): number
-    - resolveNodeId(nodeId: string, namespaceUri: string): NodeId
-    - //async// readNameSpaceArray(): Promise<any>
-    - //async// createAndConnectClient(): Promise<OPCUAClient>
-    - //async// createSession()
-    - //async// createSubscription()
+	- //readonly// nodes: Map<string, CIData>
+	- dataItemNodeMapping: Map<string, NodeId>
+	- nodeDataTypeMapping: Map<NodeId, DataType>
+
+	+ //get// connected(): boolean
+	+ //get// endpoint(): string | undefined
+	+ //set// endpoint(value: string | undefined)
+	+ OpcUaAdapter(options?: OpcUaConnectionAdapterOptions)
+	+ //async// initialize(options?: OpcUaConnectionAdapterOptions): Promise<void>
+	+ //async// update(options: OpcUaConnectionAdapterOptions,)
+	- //async// updateAvailableEndpoints(): Promise<void>
+	- getSecurityMode(): string | undefined
+	- getSecurityPolicy(): string | undefined
+	+ //async// connect(endpointConfig: OpcUaEndpointSetting): Promise<void>
+	+ //async// disconnect(): Promise<void>
+	+ //async// readNode(ciData: CIData): Promise<DataValue | undefined>
+	- //async// getBuiltInDataType(nodeId: NodeId): Promise<undefined | DataType>
+	+ //async// writeNode(ciData: CIData, value: number | string | boolean): Promise<void>
+	+ addDataItemToMonitoring(ciData: CIData, identifier?: string): string
+	- findAlreadyMonitoredNode(ciData: CIData): string | undefined
+	+ removeNodeFromMonitoring(identifier: string): void
+	+ //async// startMonitoring(samplingInterval = 100): Promise<void>
+	+ //async// stopMonitoring(): Promise<void>
+	+ monitoredNodesCount(): number
+	+ clearMonitoredNodes(): void
+	- createClient(): void
+	- //async// connectClient(): Promise<void>
+	- //async// disconnectClient(): Promise<void>
+	- //async// createSession(userIdentityOptions?: OpcUaUserSetting): Promise<void>
+	- //async// closeSession(): Promise<void>
+	+ //async// createSubscription(): Promise<void>
+	- //async// stopSubscription(): Promise<void>
+	- //async// resolveNodeIdDataType(nodeId: NodeId): Promise<DataType>
+	- resolveNodeId(ciData: CIData, identifier?: string): NodeId
+	- resolveNamespaceIndex(namespace: string): number
+	- checkNamespaceIndexExists(namespaceIndex: number): boolean
+	- findNamespaceIndex(namespace: string): number
+	- //async// readNameSpaceArray(): Promise<void>
+	- validEndPointUrl(endpointUrl: string): boolean
+	+ getAdapterInfo(): OpcUaAdapterInfo
+
 }
-OpcUaConnectionAdapterEmitter <|-- OpcUaConnectionAdapter
+OpcUaConnectionAdapterEmitter <|-- OpcUaAdapter
 
 @enduml
 
