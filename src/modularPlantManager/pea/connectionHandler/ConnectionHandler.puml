@@ -49,6 +49,8 @@ class ConnectionHandler{
     + //async// updateConnectionAdapter(adapterId: string, options: OpcUaEndpointSetting)
 
 }
+
+ConnectionHandler *-- OpcUaAdapter
 ConnectionEmitter <|-- ConnectionHandler
 
 @enduml
