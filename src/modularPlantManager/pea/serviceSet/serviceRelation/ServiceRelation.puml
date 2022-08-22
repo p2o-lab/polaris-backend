@@ -25,17 +25,27 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ./Instances/ServiceDisable.puml
-!include ./Instances/ServiceEnable.puml
-!include ./Instances/ServiceForce.puml
-!include ./Instances/ServiceSynchronisation.puml
+
 
 abstract class ServiceRelation{
-SourceServiceID
-SourceProcedureID
-SourceValue
-TargetProcedureID
-TargetValue
+    + //readonly// sourceServiceID: string
+    + //readonly// sourceProcedureID: string
+    + //readonly// targetServiceID: string
+    + //readonly// targetProcedureID: string
+    + //readonly// sourceValue: string
+    # _type !: ServiceRelationType
+    # _parentID: string
+    # _id: string
+
+    + ServiceRelation(serviceRelationOptions: ServiceRelationOptions, parentID: string)
+    + getSourceServiceID(): string
+    + getSourceProcedureID(): string
+    + getTargetServiceID(): string
+    + getSourceValue(): string
+    + getTargetProcedureID(): string
+    + getType(): ServiceRelationType
+    + json(): ServiceRelationInterface
+
 }
 
 ServiceRelation <|-- ServiceDisable

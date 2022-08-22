@@ -26,45 +26,51 @@
 @startuml
 'https://plantuml.com/class-diagram
 !include procedure/Procedure.puml
+!include ./BaseService.puml
 
 class Service{
-    + readonly procedures: Procedure[] = [];
-    + readonly parameters: ServParam[] = [];
-    + readonly connection: OpcUaConnection;
+    + //readonly// procedures: Procedure[] = [];
+    + //readonly// parameters: ServParam[] = [];
+    + //readonly// connectionHandler: ConnectionHandler;
     + serviceControl: ServiceControl;
-    - readonly logger: Category;
-    - serviceParametersEventEmitters: EventEmitter[];
-    - readonly _parentId: string;
+    - //readonly// logger: Category;
+    - //readonly// _parentId: string;
 
-    + Service(serviceOptions: ServiceOptions, connection: OpcUaConnection, parentId: string)
+    + Service(serviceOptions: ServiceModel, connectionHandler: ConnectionHandler, parentId: string)
     + get qualifiedName(): string
     + get commandEnable(): CommandEnableInterface
     + get state(): ServiceState
-    + get lastStatusChange(): Date
-    + get currentProcedure(): number | undefined
-    + getDefaultProcedure(): Procedure | undefined
+    + get lastStateCurChange(): Date
+    + get currentProcedureId(): number | undefined
     + getCurrentProcedure(): Procedure |undefined
-    + async subscribeToService(): Promise<ServiceEmitter>
+    + get requestedProcedureId(): number | undefined
+    + get requestedProcedure(): Procedure | undefined
+    + findProcedure(procedureId: number): Procedure | undefined
+    + //async// subscribeToChanges(): Promise<void>
     + unsubscribe()
     + json(): ServiceInterface
-    + async executeCommandAndWaitForStateChange(command: ServiceCommand): Promise<void>
-    + abstract async start(): Promise<void>
-    + abstract async stop(): Promise<void>
-    + abstract async reset(): Promise<void>
-    + abstract async complete(): Promise<void>
-    + abstract async abort(): Promise<void>
-    + abstract async hold(): Promise<void>
-    + abstract async unhold(): Promise<void>
-    + abstract async pause(): Promise<void>
-    + abstract async resume(): Promise<void>
-    + abstract async restart(): Promise<void>
-    + async setProcedure(procedure: Procedure): Promise<void>
-    + getProcedureByNameOrDefault(procedureName: string): Procedure | undefined
-    + async setParameters(parameterOptions: ParameterOptions[], peaSet: PEAController[] = []): Promise<void>
-    + async setOperationMode(): Promise<void>
+    + //async// executeCommand(command: ServiceCommand): Promise<void>
+    + start(): Promise<void>
+    + restart(): Promise<void>
+    + stop(): Promise<void>
+    + reset(): Promise<void>
+    + complete(): Promise<void>
+    + abort(): Promise<void>
+    + hold(): Promise<void>
+    + unhold(): Promise<void>
+    + pause(): Promise<void>
+    + resume(): Promise<void>
+    + //async// requestProcedureAutomatic(id: number): Promise<void>
+    + //async// requestProcedureOperator(id: number): Promise<void>
+    + //async// changeOsLevel(value: number): Promise<void>
+    - validProcedureId(id: number): boolean
+    + //async// setParameters(parameterOptions: ParameterOptions[], peaSet: PEA[] = []): Promise<void>
     + findInputParameter(parameterName: string): InputElement | ServParam | undefined
-    - clearListeners(): void
-    - async sendCommand(command: ServiceMtpCommand): Promise<void>
+    - //async// sendCommand(command: ServiceMtpCommand): Promise<void>
+    + //async// requestServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void>
+    + //async// requestOpMode(opMode: OperationMode): Promise<void>
+    + getDataAssemblyJson(): DataAssemblyOptions[]
+
 }
 
 Service *-down- "1..*" Procedure: has

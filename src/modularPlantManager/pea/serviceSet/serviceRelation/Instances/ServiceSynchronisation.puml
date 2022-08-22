@@ -25,7 +25,12 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../ServiceRelation.puml
 
-class ServiceSynchronisation
+class ServiceSynchronisation{
+
+    + ServiceSynchronisation(options: ServiceRelationOptions, parentID: string)
+
+}
 
 @enduml
