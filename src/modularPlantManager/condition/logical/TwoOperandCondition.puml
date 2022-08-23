@@ -25,13 +25,9 @@
 
 @startuml
 'https://plantuml.com/class-diagram
-!include AndCondition.puml
-!include OrCondition.puml
 
 abstract class TwoOperandCondition
 
-TwoOperandCondition *- TwoOperandConditionSpec
-TwoOperandConditionSpec *- TwoOperandConditionJson
 
 TwoOperandCondition <|-- AndCondition
 TwoOperandCondition <|-- OrCondition

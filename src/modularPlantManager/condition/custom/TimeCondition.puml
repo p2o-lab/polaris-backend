@@ -25,10 +25,19 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ../Condition.puml
 
-class TimeCondition
+class TimeCondition{
 
-TimeCondition *- TimeConditionSpec
-TimeConditionSpec *- TimeConditionJson
+    - timer?: NodeJS.Timeout
+    - //readonly// duration: number
+
+    + TimeCondition(options: TimeConditionOptions)
+    + listen(): Condition
+    + clear(): void
+    + getUsedPEAs(): Set <PEA>
+
+}
+
 
 @enduml

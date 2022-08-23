@@ -25,10 +25,22 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ../Condition.puml
 
-class ExpressionCondition
+class ExpressionCondition{
 
-ExpressionCondition *- ExpressionConditionSpec
-ExpressionConditionSpec *- ExpressionConditionJson
+    - //readonly// expression: Expression
+    - //readonly// scopeArray: ScopeItem[]
+
+    + ExpressionCondition(options: ExpressionConditionOptions, peaSet: PEA[] = [])
+    + getUsedPEAs(): Set<PEA>
+    + listen(): Condition
+    + //async// onChanged(): Promise<void>
+    + getValue(): any
+    + clear(): void
+    - boundOnChanged = (): Promise<void> => this.onChanged()
+
+}
+
 
 @enduml

@@ -23,16 +23,35 @@
  * SOFTWARE.
  */
 
-
 @startuml
 'https://plantuml.com/class-diagram
-!include ./TwoOperandCondition.puml
 
-class AndCondition{
+class MockupServer{
 
-    + AndCondition(options: AndConditionOptions, peas: PEA[])
-    + listen(): Condition
+    + externalTrigger:Boolean
+    - server: OPCUAServer
+    - serverName = 'MockupServer'
+    - initialized: Boolean
+    - identifier: IDProvider
+    - namespace : Namespace | undefined = undefined
+    - rootComponent: UAObject | undefined = undefined
+    - //readonly// port: number
+
+    + MockupServer(port = 4334)
+    + //async// portInUse(): Promise<boolean>
+    + //async// initialize(): Promise<void>
+    + //async// start(): Promise<void>
+    + //async// shutdown(): Promise<void>
+    + get endpoint(): string
+    + get endpointUrl(): string
+    + get endpointPort(): number
+    + get nameSpaceUri(): string
+    + get nameSpace(): Namespace
+    + get rootObject(): UAObject
+
+    - createAddressSpace(): void
+    + get basicPEAOptions(): PEAOptions
+
 }
-
 
 @enduml

@@ -23,16 +23,20 @@
  * SOFTWARE.
  */
 
-
 @startuml
 'https://plantuml.com/class-diagram
-!include ./TwoOperandCondition.puml
+!include ./Condition.puml
+!include ./peaCondition/PEACondition.puml
+!include ./peaCondition/ServiceStateCondition.puml
+!include ./peaCondition/VariableCondition.puml
+!include ./custom/TimeCondition.puml
+!include ./custom/ExpressionCondition.puml
 
-class AndCondition{
+abstract class ConditionFactory{
+	{static} create(options: ConditionOptions, peaSet?: PEA[]): Condition
 
-    + AndCondition(options: AndConditionOptions, peas: PEA[])
-    + listen(): Condition
 }
 
+ConditionFactory "<<create>>"..> Condition
 
 @enduml

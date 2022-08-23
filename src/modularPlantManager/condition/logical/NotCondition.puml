@@ -25,10 +25,15 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ../Condition.puml
 
-class NotCondition
+class NotCondition{
 
-NotCondition *- NotConditionSpec
-NotConditionSpec *- NotConditionJson
+    + NotCondition(options: NotConditionOptions, peaSet: PEA[])
+    + clear(): void
+    + listen(): Condition
+
+}
+
 
 @enduml

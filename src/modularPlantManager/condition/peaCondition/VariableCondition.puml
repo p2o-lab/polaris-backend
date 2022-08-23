@@ -25,10 +25,19 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ./PEACondition.puml
 
-class VariableCondition
+class VariableCondition{
 
-VariableCondition *- VariableConditionSpec
-VariableConditionSpec *- VariableConditionJson
+    + //readonly// dataStructure: string
+    + //readonly// variable: string
+    + //readonly// value: string | number
+    + readonly operator: '==' | '<' | '>' | '<=' | '>='
+
+    + VariableCondition(options: VariableConditionOptions, peaSet: PEA[])
+    + listen(): Condition
+    - check = (data: { value: number }): void
+
+}
 
 @enduml

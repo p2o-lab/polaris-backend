@@ -25,13 +25,12 @@
 
 @startuml
 'https://plantuml.com/class-diagram
-!include ServiceStateCondition.puml
-!include VariableCondition.puml
 
-abstract class PEACondition
+abstract class PEACondition{
 
-PEACondition *- PEAConditionSpec
-PEAConditionSpec *- PEAConditionJson
+    + PEACondition(options: StateConditionOptions | VariableConditionOptions, peaSet: PEA[])
+
+}
 
 PEACondition <|-- ServiceStateCondition
 PEACondition <|-- VariableCondition

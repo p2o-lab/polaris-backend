@@ -25,10 +25,15 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ./PEACondition.puml
 
-class ServiceStateCondition
+class ServiceStateCondition{
 
-ServiceStateCondition *- ServiceStateConditionSpec
-ServiceStateConditionSpec *- ServiceStateConditionJson
+    + //readonly// service: BaseService
+    + //readonly// state: ServiceState
+
+}
+
+ServiceStateCondition *- BaseService
 
 @enduml

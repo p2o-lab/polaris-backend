@@ -27,10 +27,16 @@
 'https://plantuml.com/class-diagram
 
 abstract class Condition{
-        {static} create()
-        {abstract} listen()
-        {abstract} clear()
-        json()
+        - readonly options: ConditionOptions
+        # readonly usedPEA: PEA | undefined
+        # _fulfilled: boolean | undefined = undefined
+
+        + Condition(options: ConditionOptions, peaSet: PEA[])
+        + get fulfilled(): boolean | undefined
+        + {abstract} listen()
+        + clear()
+        + getUsedPEAs(): Set<PEA>
+        + json(): ConditionOptions
 }
 
 Condition <|-- custom
