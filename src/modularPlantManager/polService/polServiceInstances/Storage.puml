@@ -25,7 +25,14 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../POLService.puml
 
-class Storage
+class Storage{
+
+    + static type = 'storage'
+    + Storage(name: string)
+    # initParameter(): void
+
+}
 
 @enduml

@@ -25,7 +25,19 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../POLService.puml
 
-class FunctionGenerator
+class FunctionGenerator{
+
+    + static type = 'pidController'
+    - ctr!: Controller
+
+    + FunctionGenerator(name: string)
+    - _output!: number
+    + //async// setParameters(parameters: Array<Parameter | ParameterOptions>): Promise<void>
+    + //async// onStarting(): Promise<void>
+    # initParameter(): void
+
+}
 
 @enduml

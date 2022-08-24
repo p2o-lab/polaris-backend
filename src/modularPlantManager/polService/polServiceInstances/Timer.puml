@@ -25,7 +25,32 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../POLService.puml
 
-class Timer
+class Timer{
+
+    + static type = 'timer'
+    - durationMs!: number
+    - timestampStart!: Date
+    - elapsedTime!: number
+    - timerId!: Timeout
+    - timerUpdateId!: Timeout
+
+    + Timer(name: string)
+    - _remainingTime!: number
+    - get remainingTime(): number
+    - set remainingTime(value: number)
+    # initParameter(): void
+    # //async// onStarting(): Promise<void>
+    # //async// onExecute(): Promise<void>
+    # //async// onPausing(): Promise<void>
+    # //async// onResuming(): Promise<void>
+    # //async// onHolding(): Promise<void>
+    # //async// onCompleting(): Promise<void>
+    # //async// onAborting(): Promise<void>
+    # //async// onStopping(): Promise<void>
+
+}
+
 
 @enduml
