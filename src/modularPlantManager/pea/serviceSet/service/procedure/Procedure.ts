@@ -156,4 +156,12 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 		return (Number.isInteger(valueToCheck) && valueToCheck > 0);
 	}
 
+	getDataAssemblyInfo(): {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] {
+		const result: {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] = [];
+		this.processValuesIn.forEach((inputElement) => result.push(inputElement.getDataAssemblyInfo()));
+		this.processValuesOut.forEach((indicatorElement) => result.push(indicatorElement.getDataAssemblyInfo()));
+		this.reportParameters.forEach((indicatorElement) => result.push(indicatorElement.getDataAssemblyInfo()));
+		this.parameters.forEach((serviceParameter) => result.push(serviceParameter.getDataAssemblyInfo()));
+		return result;
+	}
 }

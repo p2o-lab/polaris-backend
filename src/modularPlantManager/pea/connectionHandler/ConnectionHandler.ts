@@ -85,10 +85,12 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 
 
 	public addConnectionAdapter(options: AdapterOptions): string {
-			const newAdapter = ConnectionAdapterFactory.create(options);
-			newAdapter.on('configChanged', () => {this.emit('changed');});
-			this._connectionAdapters.push(newAdapter);
-			return newAdapter.id;
+		const newAdapter = ConnectionAdapterFactory.create(options);
+		newAdapter.on('configChanged', () => {
+			this.emit('changed');
+		});
+		this._connectionAdapters.push(newAdapter);
+		return newAdapter.id;
 	}
 
 
@@ -106,12 +108,12 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * @returns {Promise<void>}
 	 */
 	public async connectAdapter(adapterId: string, options?: AdapterConnectOptions): Promise<void> {
-			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
-			if (adapter){
-					await adapter.connect(options);
-					this.emit('connected');
-					return Promise.resolve();
-				}
+		const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
+		if (adapter) {
+			await adapter.connect(options);
+			this.emit('connected');
+			return Promise.resolve();
+		}
 		return Promise.reject();
 	}
 
@@ -120,10 +122,10 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * @returns {Promise<void>}
 	 */
 	public async connectAllConnectionAdapters(): Promise<void> {
-			for (const a of this._connectionAdapters) {
-				await a.connect();
-			}
-			this.emit('connected');
+		for (const a of this._connectionAdapters) {
+			await a.connect();
+		}
+		this.emit('connected');
 		return Promise.resolve();
 	}
 
@@ -132,26 +134,26 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * @returns {Promise<void>}
 	 */
 	public async startMonitoring(adapterId?: string): Promise<void> {
-		if (adapterId){
+		if (adapterId) {
 			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
-			if (adapter && adapter.connected){
-					adapter.on('monitoredNodeChanged', (data: any) => {
-						console.log(`[${this.id}] ${data.monitoredNodeId} changed to ${data.value}`);
-						this.emit('monitoredDataItemChanged', {
-							monitoredDataItemId: data.monitoredNodeId,
-							value: data.value,
-							dataType: data.dataType,
-							timestamp: data.timestamp,
-						});
+			if (adapter && adapter.connected) {
+				adapter.on('monitoredNodeChanged', (data: any) => {
+					console.log(`[${this.id}] ${data.monitoredNodeId} changed to ${data.value}`);
+					this.emit('monitoredDataItemChanged', {
+						monitoredDataItemId: data.monitoredNodeId,
+						value: data.value,
+						dataType: data.dataType,
+						timestamp: data.timestamp,
 					});
-					this.monitoredDataItems.forEach((value, key) => adapter.addDataItemToMonitoring(value, key));
-					await adapter.startMonitoring();
-				} else {
+				});
+				this.monitoredDataItems.forEach((value, key) => adapter.addDataItemToMonitoring(value, key));
+				await adapter.startMonitoring();
+			} else {
 				return Promise.reject('Not connected!');
 			}
 		} else {
 			for (const adapter of this._connectionAdapters) {
-				if (adapter.connected){
+				if (adapter.connected) {
 					adapter.on('monitoredNodeChanged', (data: any) => {
 						console.log(`[${this.id}] ${data.monitoredNodeId} changed to ${data.value}`);
 						this.emit('monitoredDataItemChanged', {
@@ -170,9 +172,9 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	}
 
 	public async stopMonitoring(adapterId?: string): Promise<void> {
-		if (adapterId){
+		if (adapterId) {
 			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
-			if (adapter){
+			if (adapter) {
 				adapter.removeAllListeners();
 				await adapter.stopMonitoring();
 			}
@@ -189,17 +191,17 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * Disconnect Connection Adapter
 	 * @returns {Promise<void>}
 	 */
-	public async disconnect(adapterId?:string): Promise<void> {
-		if (adapterId){
+	public async disconnect(adapterId?: string): Promise<void> {
+		if (adapterId) {
 			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
-			if (adapter){
+			if (adapter) {
 				await adapter.disconnect();
 				this.emit('disconnected');
 			} else {
 				throw new Error('Connection Adapter not found!');
 			}
 		} else {
-			await this._connectionAdapters.forEach( a => a.disconnect());
+			await this._connectionAdapters.forEach(a => a.disconnect());
 			this.emit('disconnected');
 		}
 		return Promise.resolve();
@@ -217,7 +219,7 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 	 * read the value of provided NodeID information
 	 * @returns {Promise<DataValue | undefined>}
 	 */
-	public async readDataItemValue(ciData: CIData):  Promise<DataValue | undefined> {
+	public async readDataItemValue(ciData: CIData): Promise<DataValue | undefined> {
 		// TODO: extend ciData with Endpoint identifier
 		return this._connectionAdapters[0].read(ciData);
 	}
@@ -255,14 +257,22 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		return this.monitoredDataItems.size;
 	}
 
-	public clearMonitoredDataItems(): void{
+	public clearMonitoredDataItems(): void {
 		this.removeAllListeners();
 		this.monitoredDataItems.clear();
 	}
 
-	public async updateAdapter(adapterId: string, options?: AdapterOptions): Promise<void> {
-			const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
-			if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
-			await resolvedAdapter.initialize(options);
+	public async updateAdapter(adapterId: string, options: AdapterOptions): Promise<void> {
+		const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
+		if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
+		await resolvedAdapter.initialize(options); // TODO: change the method
+		this.emit('changed');
+	}
+
+	async initializeConnectionAdapter(adapterId: string) {
+		const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
+		if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
+		await resolvedAdapter.initialize();
+		this.emit('changed');
 	}
 }

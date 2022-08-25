@@ -27,7 +27,7 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../../logging';
-import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {AdapterConnectOptions, AdapterOptions, OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {PEAProvider} from '../../../peaProvider/PEAProvider';
 
 export const peaRouter: Router = Router();
@@ -198,14 +198,14 @@ peaRouter.post('/:peaId/addConnection', async (req: Request, res: Response) => {
  * @apiParam {string} peaId
  * @apiBody {}
  */
-peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/connection/initialize', async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try {
 		const pea = manager.findPEAController(req.params.peaId);
 		if (pea) {
-			const adapterIds: [] = req.body.adapterIds;
+			const adapterIds: string[] = req.body.adapterIds;
 			if (adapterIds){
-				await adapterIds.forEach( a => pea.initializeConnection(a));
+				await adapterIds.forEach( a => pea.initializeConnectionAdapter(a));
 				res.status(200).send();
 			} else {
 				res.status(404).send('Error: Invalid arguments.');
@@ -223,18 +223,18 @@ peaRouter.post('/:peaId/initializeConnection', async (req: Request, res: Respons
 });
 
 /**
- * @api {post} /:peaId/updateConnection/:connectionId
+ * @api {post} /:peaId/connection/:connectionAdapterId/changeEndpoint
  * @apiName Update Connection
  * @apiGroup PEA
  * @apiParam {string} peaId
  * @apiParam {OpcUaEndpointSettings} options
  */
-peaRouter.post('/:peaId/connection/:connectionId/update', asyncHandler(async (req: Request, res: Response) => {
+peaRouter.post('/:peaId/connection/:connectionAdapterId/changeEndpoint', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
 	try{
 		const pea = manager.findPEAController(req.params.peaId);
 		if (pea){
-			pea.updateConnectionAdapter(req.params.handlerId, req.body);
+			await pea.updateConnectionAdapter(req.params.connectionAdapterId, req.body);
 			res.status(200).send('Successfully updated the connection!');
 		} else {
 			res.status(404).send(`Error: PEA with id ${req.params.peaId} not found`);
@@ -300,8 +300,8 @@ peaRouter.post('/:peaId/connect', asyncHandler(async (req: Request, res: Respons
 /**
  * @api {post} /:peaId/disconnect -  Disconnect PEAController
  * @apiName DisconnectPEA
- * @apiGroup PEAController
- * @apiParam {string} peaId    ID of PEAController to be disconnected.
+ * @apiGroup PEA
+ * @apiParam {string} peaId    ID of PEA to be disconnected.
  */
 peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -323,9 +323,9 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId - Delete PEAController by ID
+ * @api {delete} /:peaId - Delete PEA by ID
  * @apiName DeletePEA
- * @apiGroup PEAController
+ * @apiGroup PEA
  * @apiParam {string} peaId    ID of PEAController to be deleted
  */
 

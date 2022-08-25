@@ -255,8 +255,8 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 
 	/**
 	 * set all event listeners for new PEAControllers
-	 * @param newPEAs - new PEAControllers
 	 * @private
+	 * @param pea
 	 */
 	private setPEAEventListeners(pea: PEA): void {
 		pea.on('connected', () => {

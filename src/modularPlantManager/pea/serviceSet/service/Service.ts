@@ -396,4 +396,12 @@ export class Service extends BaseService{
 		this.parameters.forEach((serviceParam) => result.push(serviceParam.toDataAssemblyOptionsJson()));
 		return result;
 	}
+
+	getDataAssemblyInfo(): {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] {
+		const result: {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] = [];
+		result.push(this.serviceControl.getDataAssemblyInfo());
+		this.procedures.forEach((procedure) => procedure.getDataAssemblyInfo().forEach((r) => result.push(r)));
+		this.parameters.forEach((serviceParam) => result.push(serviceParam.getDataAssemblyInfo()));
+		return result;
+	}
 }

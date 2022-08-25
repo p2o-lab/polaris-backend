@@ -128,6 +128,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 			securityPolicy: endpoint.securityPolicyUri?.toString(),
 		}));
 		await client.disconnect();
+		this.availableEndpoints.clear();
 		reducedEndpoints.forEach((eP) => {
 			this.availableEndpoints.set(IDProvider.generateIdentifier(), eP);
 		});

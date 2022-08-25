@@ -59,6 +59,7 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 	public defaultWriteDataItemType: any;
 
 	public dataItems!: DataAssemblyDataItems;
+	private dataItemKeys: string[] = [];
 
 	constructor(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false) {
 		super();
@@ -79,6 +80,7 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 
 	protected initializeDataItems(options:DataAssemblyModel, keyList: string[]){
 		this.dataItems = <typeof this.dataItems>{};
+		this.dataItemKeys = keyList;
 		keyList.forEach(k => {
 			let dataType: string = POLDataType[k as keyof typeof POLDataType];
 			if (dataType === 'context'){
@@ -178,6 +180,23 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 
 	public toJson(): ParameterInterface {
 		return {
+			name: this.name
+		};
+	}
+	
+	private getDataItemSummary(): {name: string, value: string}[] {
+		const dataAssemblySummary: {name: string, value: string}[] = [];
+		this.dataItemKeys.forEach((key) => {
+			const dataItem = this.dataItems[key as keyof typeof this.dataItems];
+			dataAssemblySummary.push({name: key, value: dataItem.value});
+		});
+		return dataAssemblySummary;
+	}
+
+	getDataAssemblyInfo(): {dataItems: {name: string, value: string}[], metaModelRef: string, name: string} {
+		return {
+			dataItems: this.getDataItemSummary(),
+			metaModelRef: this.metaModelRef,
 			name: this.name
 		};
 	}

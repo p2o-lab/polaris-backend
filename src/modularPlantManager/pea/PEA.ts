@@ -185,7 +185,8 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 
 		this.connectionHandler = new ConnectionHandler()
 			.on('connected', () => this.emit('connected'))
-			.on('disconnected', () => this.emit('disconnected'));
+			.on('disconnected', () => this.emit('disconnected'))
+			.on('changed', () => this.emit('connectionChange'));
 		options.endpoints.forEach(
 			epOptions => {
 				const adapterOptions: OpcUaAdapterOptions = {name: epOptions.name, endpoint: epOptions.value};
@@ -204,10 +205,6 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 				);
 		}
 		this.subscribe().then();
-	}
-
-	public async updateConnectionAdapter(adapterId: string, options: AdapterOptions) {
-		await this.connectionHandler.updateAdapter(adapterId, options);
 	}
 
 	public isProtected(): boolean {
@@ -235,7 +232,12 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		return this.services.map((service) => service.json());
 	}
 
-	public async initializeConnection(adapterId: string, options?: AdapterOptions): Promise<void> {
+	public async initializeConnectionAdapter(adapterId: string): Promise<void> {
+		await this.connectionHandler.initializeConnectionAdapter(adapterId);
+	}
+
+
+	public async updateConnectionAdapter(adapterId: string, options: AdapterOptions) {
 		await this.connectionHandler.updateAdapter(adapterId, options);
 	}
 
@@ -519,10 +521,10 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		this.services.forEach((service) => service.unsubscribe());
 	}
 
-	getDataAssemblyJson(): DataAssemblyOptions[] {
-		const result: DataAssemblyOptions[] = [];
-		this.dataAssemblies.forEach((dataAssembly) => result.push(dataAssembly.toDataAssemblyOptionsJson()));
-		this.services.forEach((service) => service.getDataAssemblyJson().forEach((r) => result.push(r)));
+	getDataAssemblyJson(): { dataItems: { name: string; value: string; }[]; metaModelRef: string; name: string; }[] {
+		const result: { dataItems: { name: string; value: string; }[]; metaModelRef: string; name: string; }[] = [];
+		this.dataAssemblies.forEach((dataAssembly) => result.push(dataAssembly.getDataAssemblyInfo()));
+		this.services.forEach((service) => service.getDataAssemblyInfo().forEach((r) => result.push(r)));
 		return result;
 	}
 }
