@@ -22,34 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
-!include step/Step.puml
 
-class Recipe{
+class PEAProvider{
 
-    + //readonly// id: string
-    + //readonly// name: string
-    + //readonly// options: RecipeOptions
-    + //readonly// protected: boolean
-    + peaSet: Set<PEA> = new Set<PEA>()
-    + //readonly// initialStep: Step | undefined
-    + //readonly// steps: Step[]
-    + currentStep: Step | undefined
-    + status: RecipeState
-    + lastChange: Date
-    - stepListener: EventEmitter | undefined
-
-    + Recipe(options: RecipeOptions, peas: PEA[], protectedRecipe = false)
-    + json(): RecipeInterface
-    + connectPEAs(): Promise<void[] | void>
-    + //async// start(): Promise<Recipe>
-    + pause(): void
-    + //async// stop(): Promise<void>
-    - executeStep(): void
-
+    + //async// getAllPEAsFromPiMAd(): Promise<PEAModel[]>
+    + //async// getPEAFromPiMAd(peaId: string): Promise<PEAModel>
 }
 
-Recipe "1" *-- "*" Step: contains >
 @enduml

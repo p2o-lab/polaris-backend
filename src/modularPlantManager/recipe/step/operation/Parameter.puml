@@ -26,6 +26,22 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class Parameter
+class Parameter{
+
+    + readonly name: string
+    + readonly value: string | number | boolean
+    + readonly scopeArray: ScopeItem[]
+    + readonly continuous: boolean
+    + readonly options: ParameterOptions
+    - readonly expression: Expression
+    - readonly logger: Category
+    - active: boolean
+
+    + (parameterOptions: ParameterOptions, peas: PEA[] = [])
+    + listenToScopeArray(): void
+    + unlistenToScopeArray(): void
+    + getValue(): number | boolean
+    - notify(): void
+}
 
 @enduml

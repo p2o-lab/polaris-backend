@@ -28,7 +28,18 @@
 !include transition/Transition.puml
 !include operation/Operation.puml
 
-class Step
+class Step{
+
+    + name: string
+    + operations: Operation[]
+    + transitions: Transition[]
+
+    + Step(options: StepOptions, peaSet: PEA[])
+    + getUsedPEAs(): Set<PEA>
+    + execute(): void
+    + enterTransition(nextTransition: Transition): void
+    + json(): StepInterface
+}
 
 Step "1" o-- "*" Transition
 Step <-- Transition: nextStep

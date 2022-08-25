@@ -26,6 +26,24 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class ScopeItem
+class ScopeItem{
+
+    + //readonly// name: string
+    + //readonly// dataAssembly: DataAssembly
+    + //readonly// pea: PEA
+    + //readonly// variableName: string
+    + //readonly// dataItem: DataItem<any>
+
+    + ScopeItem(name: string, pea: PEA, dataAssembly: DataAssembly, variableName = '')
+    + //static// extractFromExpressionString(expression: string, peas: PEA[], ignoredNames: string[] = []): { expression: Expression; scopeItems: ScopeItem[] }
+    + //static// extractFromScopeOptions(item: ScopeOptions, peas: PEA[]): ScopeItem
+    + //static// extractFromExpressionVariable(variable: string, peas: PEA[]): ScopeItem
+    + getScopeValue(): object
+
+}
+
+ScopeItem *-- DataAssembly
+ScopeItem *-- PEA
+
 
 @enduml
