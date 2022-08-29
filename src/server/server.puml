@@ -22,23 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
 
-class ExternalTrigger{
+class Server{
+    + readonly app: express.Application
+    + wss?: WebSocket.Server
+    - httpServer?: http.Server
+    - interval?: NodeJS.Timeout
 
-    - //readonly// endpoint: string
-    - //readonly// nodeId: NodeId
-    - client: OPCUAClient
-    - session!: ClientSession
-    - //readonly// callback: () => void
-
-    + ExternalTrigger(endpoint: string, nodeId: string, callback: () => void)
-    + //async// getValue(): Promise<boolean>
-    + //async// startMonitoring(): Promise<void>
-    + //async// disconnect(): Promise<void>
+    + Server(manager: ModularPlantManager, peaProvider: PEAProvider)
+    + startHttpServer(port: number | string | boolean): void
+    + initSocketServer(): void
+    - notifyClients(notification: BackendNotification): void
+    - async stop(): Promise<void>
 
 }
-
 @enduml
