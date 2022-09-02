@@ -1,0 +1,58 @@
+{
+  "version": "0.0.1",
+  "name": "Recipe Red Flash Light",
+  "description": "Basic recipe for the purpose of testing the light indicator pea",
+  "author": "Julius Lorenz",
+  "initialStep": "Startup.Init",
+  "steps": [
+    {
+      "name": "Startup.Init",
+      "operations": [
+        {
+          "pea": "StahlTrafficLight",
+          "service": "RedTrafficLight",
+          "procedure": "Flash3Times",
+          "command": "start",
+          "parameter": []
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "pea": "StahlTrafficLight",
+            "service": "RedTrafficLight",
+            "state": "completed"
+          },
+          "nextStep": "Finalize.Reset"
+        }
+      ]
+    },
+    {
+      "name": "Finalize.Reset",
+      "operations": [
+        {
+          "pea": "StahlTrafficLight",
+          "service": "RedTrafficLight",
+          "procedure": "Flash3Times",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "pea": "StahlTrafficLight",
+            "service": "RedTrafficLight",
+            "state": "idle"
+          },
+          "nextStep": "completed"
+        }
+      ]
+    }
+  ],
+  "requirements": {
+    "peas": ["StahlTrafficLight"],
+    "polServices": [],
+    "autoResetServicesOnceCompleted": false}
+}

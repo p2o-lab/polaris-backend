@@ -40,7 +40,7 @@ import {
 	TimeConditionOptions,
 	VariableConditionOptions
 } from '@p2olab/polaris-interface';
-import {PEA} from '../pea/PEA';
+import {PEA} from '../pea';
 import {Condition} from './Condition';
 import {ExpressionCondition, TimeCondition} from './custom';
 import {

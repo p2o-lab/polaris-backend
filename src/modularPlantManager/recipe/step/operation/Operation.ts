@@ -47,7 +47,7 @@ export class Operation extends EventEmitter{
 		super();
 		if (peas) {
 			if (options.pea) {
-				this.pea = peas.find((p) => p.id === options.pea);
+				this.pea = peas.find((p) => p.name === options.pea);
 				if (!this.pea) {
 					throw new Error(`Could not find PEA ${options.pea} ` +
 						`in ${JSON.stringify(peas.map((m) => m.id))}`);
@@ -56,7 +56,7 @@ export class Operation extends EventEmitter{
 				this.pea = peas[0];
 			} else {
 				throw new Error(`Operation ${JSON.stringify(options)} has no PEA specified ` +
-					'and there is more than one PEAController loaded');
+					'and there is more than one PEA loaded');
 			}
 		} else {
 			throw new Error('No PEAs specified');

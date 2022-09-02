@@ -66,7 +66,7 @@ describe('POLServiceFactory', () => {
 			expect(timer.json().type).equal('Timer');
 			expect(timer.json().name).equal('timer1');
 			const json = timer.json().procedures[0];
-			expect(json.parameters).deep.equal([
+			expect(json.procedureParameters).deep.equal([
 				{
 					min: 1,
 					name: 'duration',
@@ -108,8 +108,8 @@ describe('POLServiceFactory', () => {
 			const json = aggregatedService.json();
 			expect(json.type).equal('AggregatedService');
 			expect(json.name).equal('DoseFill');
-			expect(json.parameters).deep.equal([]);
-			expect(json.procedures[0].parameters).deep.equal([
+			expect(json.configurationParameters).deep.equal([]);
+			expect(json.procedures[0].procedureParameters).deep.equal([
 				{
 					default: '0',
 					name: 'SetVolume',
@@ -137,11 +137,11 @@ describe('POLServiceFactory', () => {
 			const timer = new Timer('t1');
 
 			const json = timer.json().procedures[0];
-			expect(json.parameters).to.have.lengthOf(2);
+			expect(json.procedureParameters).to.have.lengthOf(2);
 			expect(json.processValuesIn).to.equal(undefined);
 			expect(json.processValuesOut).to.have.lengthOf(1);
 			expect(json.reportParameters).to.equal(undefined);
-			expect(json.parameters[0]).to.deep.equal({
+			expect(json.procedureParameters[0]).to.deep.equal({
 				'min': 1,
 				'name': 'duration',
 				'unit': 'ms',
@@ -208,15 +208,15 @@ describe('POLServiceFactory', () => {
 			const timer = new Timer('t1');
 			expect(timer.state).to.equal(ServiceState.IDLE);
 
-			timer.start();
+			timer.start().then();
 			await timer.waitForStateChangeWithTimeout('EXECUTE');
 			expect(timer.state).to.equal(ServiceState.EXECUTE);
 
-			timer.restart();
+			timer.restart().then();
 			await timer.waitForStateChangeWithTimeout('EXECUTE');
 			expect(timer.state).to.equal(ServiceState.EXECUTE);
 
-			timer.abort();
+			timer.abort().then();
 			await timer.waitForStateChangeWithTimeout('ABORTED');
 			expect(timer.state).to.equal(ServiceState.ABORTED);
 
@@ -233,7 +233,7 @@ describe('POLServiceFactory', () => {
 				unhold: false
 			});
 
-			timer.reset();
+			timer.reset().then();
 			await timer.waitForStateChangeWithTimeout('IDLE');
 			expect(timer.state).to.equal(ServiceState.IDLE);
 		});
@@ -244,7 +244,7 @@ describe('POLServiceFactory', () => {
 			const f1 = new FunctionGenerator('f1');
 			expect(f1.state).to.equal(ServiceState.IDLE);
 
-			let params = f1.json().procedures[0].parameters;
+			let params = f1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(2);
 			expect(f1.json().procedures[0].processValuesOut).to.have.lengthOf(1);
 
@@ -274,19 +274,19 @@ describe('POLServiceFactory', () => {
 	describe('Storage', () => {
 		it('should work', async () => {
 			const s1 = new Storage('s1');
-			let params = s1.json().procedures[0].parameters;
+			let params = s1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', undefined);
 
 			s1.setParameters([{name: 'storage', value: 2}]);
-			params = s1.json().procedures[0].parameters;
+			params = s1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', 2);
 
 			s1.setParameters([{name: 'storage', value: 'teststring'}]);
-			params = s1.json().procedures[0].parameters;
+			params = s1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(1);
 			expect(params[0]).to.have.property('name', 'storage');
 			expect(params[0]).to.have.property('value', 'teststring');
@@ -294,7 +294,7 @@ describe('POLServiceFactory', () => {
 			await s1.start();
 			await s1.complete();
 			await s1.reset();
-			params = s1.json().procedures[0].parameters;
+			params = s1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(1);
 		});
 	});
@@ -302,13 +302,13 @@ describe('POLServiceFactory', () => {
 	describe('FunctionGenerator', () => {
 		it('should work', async () => {
 			const f1 = new FunctionGenerator('s1');
-			let params = f1.json().procedures[0].parameters;
+			let params = f1.json().procedures[0].procedureParameters;
 			expect(params).to.have.lengthOf(2);
 			expect(params[0]).to.have.property('name', 'function');
 			expect(params[0]).to.have.property('value', 'sin(t)');
 
 			f1.setParameters([{name: 'function', value: '2*t'}]);
-			params = f1.json().procedures[0].parameters;
+			params = f1.json().procedures[0].procedureParameters;
 			expect(params[0]).to.have.property('name', 'function');
 			expect(params[0]).to.have.property('value', '2*t');
 

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
+import {ParameterInfo, ParameterOptions} from '@p2olab/polaris-interface';
 import {DynamicDataItem} from '../dataItem/DataItem';
 import {DataAssembly} from '../DataAssembly';
 import {PEA} from '../../PEA';
@@ -100,11 +100,12 @@ export class OperationElement extends DataAssembly {
 		}
 	}
 
-	public toJson(): ParameterInterface {
+	public toJson(): ParameterInfo {
 		return {
 			name: this.name,
+			id: this.id,
 			value: this.getDefaultWriteValue(),
-			type: this.defaultWriteDataItemType,
+			parameterType: this.defaultWriteDataItemType,
 			readonly: false,
 			timestamp: this.getLastDefaultWriteValueUpdate(),
 			requestedValue: this.requestedValue

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInterface, ParameterOptions, ServiceCommand, ServiceInterface, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInfo, ParameterOptions, ServiceCommand, ServiceInfo, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {BaseDataItem, DynamicDataItem} from '../../connectionHandler';
 import {controlEnableToJson, DataAssemblyFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
@@ -34,7 +34,6 @@ import {Procedure} from './procedure/Procedure';
 import {catService} from '../../../../logging';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {ServiceModel} from '@p2olab/pimad-interface';
-import {MTPDataTypes} from '@p2olab/pimad-types';
 
 
 /**
@@ -43,10 +42,10 @@ import {MTPDataTypes} from '@p2olab/pimad-types';
  * after connectionHandlerto a real PEA, commands can be triggered and states can be retrieved
  *
  */
-export class Service extends BaseService{
+export class Service extends BaseService {
 
 	public readonly procedures: Procedure[] = [];
-	public readonly parameters: ServParam[] = [];
+	public readonly configurationParameters: ServParam[] = [];
 	public readonly connectionHandler: ConnectionHandler;
 	public serviceControl: ServiceControl;
 	private readonly logger: Category;
@@ -59,8 +58,7 @@ export class Service extends BaseService{
 		this._name = serviceOptions.name;
 		if (!serviceOptions || Object.keys(serviceOptions).length == 0) {
 			throw new Error('No service options provided.');
-		}
-		else if (!serviceOptions.name) {
+		} else if (!serviceOptions.name) {
 			throw new Error('No service name provided');
 		}
 		this.connectionHandler = connectionHandler;
@@ -75,7 +73,7 @@ export class Service extends BaseService{
 
 		// TODO: Check what happens if DataAssembly already exists --> Is that a matter?
 		if (serviceOptions.parameters) {
-			this.parameters = serviceOptions.parameters
+			this.configurationParameters = serviceOptions.parameters
 				.map((options) => DataAssemblyFactory.create(options, connectionHandler) as ServParam);
 		}
 	}
@@ -171,29 +169,31 @@ export class Service extends BaseService{
 			});
 
 		await this.serviceControl.subscribe();
-		await this.parameters.forEach((param) => {param.subscribe();});
+		await this.configurationParameters.forEach((param) => {
+			param.subscribe();
+		});
 
 		this.procedures.forEach((procedure) => {
-				procedure.on('parameterChanged', (data) => {
-					this.emit('parameterChanged', {
-						procedure,
-						parameter: data.parameter,
-						parameterType: data.parameterType
-					});
+			procedure.on('parameterChanged', (data) => {
+				this.emit('parameterChanged', {
+					procedure,
+					parameter: data.parameter,
+					parameterType: data.parameterType
 				});
 			});
+		});
 	}
 
 	public unsubscribe(): void {
 		this.serviceControl.unsubscribe();
-		this.parameters.forEach((param) => param.unsubscribe());
+		this.configurationParameters.forEach((param) => param.unsubscribe());
 		this.procedures.forEach((procedure) => procedure.unsubscribe());
 	}
 
 	/**
 	 * get JSON overview about service and its state, opMode, procedures, parameters and commandEnable
 	 */
-	public json(): ServiceInterface {
+	public json(): ServiceInfo {
 		return {
 			id: this.id,
 			name: this.name,
@@ -205,28 +205,28 @@ export class Service extends BaseService{
 			state: ServiceState[this.state],
 			procedures: this.procedures.map((procedure) => procedure.toJson()),
 			currentProcedure: this.currentProcedureId || 0,
-			parameters: this.parameters.map((param) => param.toJson()),
+			configurationParameters: this.configurationParameters.map((p) => p.toJson()),
 			commandEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000,
 		};
 	}
 
 	public async executeCommand(command: ServiceCommand): Promise<void> {
-		if (!this.connectionHandler.connectionEstablished) {
-			throw new Error('PEAController is not connected');
+		if (!this.connectionHandler.connected()) {
+			throw new Error('PEA is not connected');
 		}
 		await super.executeCommand(command);
 		const currentProcedure = this.currentProcedure;
-		if(currentProcedure){
+		if (currentProcedure) {
 			this.emit('commandExecuted', {
 				procedure: currentProcedure,
 				command: command,
-				parameter: currentProcedure.parameters.map((param) => param.toJson() as ParameterInterface)
+				parameter: currentProcedure.procedureParameters.map((p) => p.toJson())
 			});
 			this.logger.info(`[${this.qualifiedName}] ${command} executed`);
 		}
-		let expectedState='';
-		switch(command){
+		let expectedState = '';
+		switch (command) {
 			case('start'):
 				expectedState = 'EXECUTE';
 				break;
@@ -306,16 +306,16 @@ export class Service extends BaseService{
 	 */
 
 	public async requestProcedureAutomatic(id: number): Promise<void> {
-		if(this.validProcedureId(id) && this.serviceControl.opMode.isAutomaticState() && this.serviceControl.serviceSourceMode.isExtSource()){
+		if (this.validProcedureId(id) && this.serviceControl.opMode.isAutomaticState() && this.serviceControl.serviceSourceMode.isExtSource()) {
 			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
-		await (this.serviceControl.dataItems.ProcedureExt as DynamicDataItem<number>).write(id);
+			await (this.serviceControl.dataItems.ProcedureExt as DynamicDataItem<number>).write(id);
 		} else {
 			this.logger.debug(`[${this.qualifiedName}] cant set procedure: ${id}. Expected a valid procedure id, automatic external mode`);
 		}
 	}
 
 	public async requestProcedureOperator(id: number): Promise<void> {
-		if(this.validProcedureId(id) && this.serviceControl.opMode.isOperatorState() && this.serviceControl.osLevel.osLevel>0){
+		if (this.validProcedureId(id) && this.serviceControl.opMode.isOperatorState() && this.serviceControl.osLevel.osLevel > 0) {
 			this.logger.debug(`[${this.qualifiedName}] request procedure: ${id}`);
 			await (this.serviceControl.dataItems.ProcedureOp as DynamicDataItem<number>).write(id);
 		} else {
@@ -334,7 +334,7 @@ export class Service extends BaseService{
 	public async setParameters(parameterOptions: ParameterOptions[], peaSet: PEA[] = []): Promise<void> {
 		parameterOptions.map((p) => {
 			const dataAssembly = this.findInputParameter(p.name);
-			if(!dataAssembly){
+			if (!dataAssembly) {
 				throw new Error('Parameter not found.');
 			}
 			dataAssembly?.setValue(p, peaSet);
@@ -344,27 +344,41 @@ export class Service extends BaseService{
 
 	public findInputParameter(parameterName: string): InputElement | ServParam | undefined {
 		let result: InputElement | ServParam | undefined;
-		result = this.parameters.find((obj) => (obj.name === parameterName));
+		result = this.configurationParameters.find((obj) => (obj.name === parameterName));
 
 		if (!result) {
-			result = this.currentProcedure?.parameters.find((obj) => (obj.name === parameterName));
+			result = this.currentProcedure?.procedureParameters.find((p) => (p.name === parameterName));
 		}
 		if (!result) {
-			result = this.currentProcedure?.processValuesIn.find((obj) => (obj.name === parameterName));
+			result = this.currentProcedure?.processValuesIn.find((p) => (p.name === parameterName));
 		}
 		return result;
 	}
 
 
 	private async sendCommand(command: ServiceMtpCommand): Promise<void> {
-		this.logger.debug(`[${this.qualifiedName}] Send command ${ServiceMtpCommand[command]}`);
-		await this.requestOpMode(OperationMode.Automatic);
-
-		await (this.serviceControl.dataItems.CommandExt as DynamicDataItem<number>).write(command);
-		this.logger.trace(`[${this.qualifiedName}] Command ${ServiceMtpCommand[command]} written`);
+		if (this.serviceControl.opMode.isOperatorState()) {
+			await this.sendCommandOp(command);
+		} else if (this.serviceControl.opMode.isAutomaticState()) {
+			await this.sendCommandAut(command);
+		} else {
+			return Promise.reject('Insufficient OpMode');
+		}
 	}
 
-	async requestServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void>{
+	private async sendCommandAut(command: ServiceMtpCommand): Promise<void> {
+		this.logger.debug(`[${this.qualifiedName}] Send CommandExt ${ServiceMtpCommand[command]}`);
+		await (this.serviceControl.dataItems.CommandExt as DynamicDataItem<number>).write(command);
+		this.logger.debug(`[${this.qualifiedName}] Wrote CommandExt ${ServiceMtpCommand[command]} `);
+	}
+
+	private async sendCommandOp(command: ServiceMtpCommand): Promise<void> {
+		this.logger.debug(`[${this.qualifiedName}] Send CommandOp ${ServiceMtpCommand[command]}`);
+		await (this.serviceControl.dataItems.CommandOp as DynamicDataItem<number>).write(command);
+		this.logger.debug(`[${this.qualifiedName}] Wrote CommandOp ${ServiceMtpCommand[command]} `);
+	}
+
+	async requestServiceSourceMode(serviceSourceMode: ServiceSourceMode): Promise<void> {
 		switch (serviceSourceMode) {
 			case ServiceSourceMode.Extern:
 				await this.serviceControl.serviceSourceMode.setToExternalServiceSourceMode();
@@ -393,15 +407,15 @@ export class Service extends BaseService{
 		const result: DataAssemblyOptions[] = [];
 		result.push(this.serviceControl.toDataAssemblyOptionsJson());
 		this.procedures.forEach((procedure) => procedure.getDataAssemblyJson().forEach((r) => result.push(r)));
-		this.parameters.forEach((serviceParam) => result.push(serviceParam.toDataAssemblyOptionsJson()));
+		this.configurationParameters.forEach((serviceParam) => result.push(serviceParam.toDataAssemblyOptionsJson()));
 		return result;
 	}
 
-	getDataAssemblyInfo(): {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] {
-		const result: {dataItems: {name: string, value: string}[], metaModelRef: string, name: string}[] = [];
+	getDataAssemblyInfo(): { dataItems: { name: string, value: string }[], metaModelRef: string, name: string }[] {
+		const result: { dataItems: { name: string, value: string }[], metaModelRef: string, name: string }[] = [];
 		result.push(this.serviceControl.getDataAssemblyInfo());
 		this.procedures.forEach((procedure) => procedure.getDataAssemblyInfo().forEach((r) => result.push(r)));
-		this.parameters.forEach((serviceParam) => result.push(serviceParam.getDataAssemblyInfo()));
+		this.configurationParameters.forEach((serviceParam) => result.push(serviceParam.getDataAssemblyInfo()));
 		return result;
 	}
 }

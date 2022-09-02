@@ -185,7 +185,7 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 			this.status === RecipeState.stopped ||
 			this.status === RecipeState.completed) {
 			this._status = RecipeState.running;
-			this._currentItem = -1;
+			this._currentItem = 0;
 			catPlayer.info('Player started');
 			this.emit('started');
 			while (this.currentItem < this.playlist.length) {
@@ -220,7 +220,9 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 	public async pause(): Promise<void> {
 		if (this.status === RecipeState.running) {
 			this._status = RecipeState.paused;
-			this.getCurrentRecipe().pause();
+			this.getCurrentRecipe().pause().then();
+		} else {
+			return Promise.reject('Recipe not running');
 		}
 	}
 
@@ -233,6 +235,8 @@ export class Player extends (EventEmitter as new() => PlayerEmitter) {
 			this._status = RecipeState.stopped;
 			await this.currentRecipeRun?.stop();
 			this.currentRecipeRun = undefined;
+		} else {
+			return Promise.reject('Recipe not running');
 		}
 	}
 

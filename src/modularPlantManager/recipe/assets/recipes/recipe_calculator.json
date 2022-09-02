@@ -1,0 +1,58 @@
+{
+  "version": "0.0.1",
+  "name": "Recipe Calculator",
+  "description": "Basic recipe for the purpose of testing the virtual Calculator pea",
+  "author": "Julius Lorenz",
+  "initialStep": "Startup.Init",
+  "steps": [
+    {
+      "name": "Startup.Init",
+      "operations": [
+        {
+          "pea": "Calculator",
+          "service": "Trigonometry",
+          "procedure": "Trigonometry_default",
+          "command": "start",
+          "parameter": []
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "pea": "Calculator",
+            "service": "Trigonometry",
+            "state": "completed"
+          },
+          "nextStep": "Finalize.Reset"
+        }
+      ]
+    },
+    {
+      "name": "Finalize.Reset",
+      "operations": [
+        {
+          "pea": "Calculator",
+          "service": "Trigonometry",
+          "procedure": "Trigonometry_default",
+          "command": "reset"
+        }
+      ],
+      "transitions": [
+        {
+          "condition": {
+            "type": "state",
+            "pea": "Calculator",
+            "service": "Trigonometry",
+            "state": "idle"
+          },
+          "nextStep": "completed"
+        }
+      ]
+    }
+  ],
+  "requirements": {
+    "peas": ["Calculator"],
+    "polServices": [],
+    "autoResetServicesOnceCompleted": false}
+}

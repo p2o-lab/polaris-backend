@@ -25,9 +25,9 @@
 
 import {
 	CommandEnableInfo,
-	ParameterInterface,
+	ParameterInfo,
 	ParameterOptions,
-	POLServiceInterface
+	POLServiceInfo
 } from '@p2olab/polaris-interface';
 import {BaseService} from '../pea';
 import {ServiceState} from '../pea/dataAssembly';
@@ -41,10 +41,10 @@ import {catPOLService} from '../../logging';
 export abstract class POLService extends BaseService {
 
 	public static type: string;
-	protected procedureParameters: ParameterInterface[] = [];
-	protected processValuesIn: ParameterInterface[] = [];
-	protected processValuesOut: ParameterInterface[] = [];
-	protected reportParameters: ParameterInterface[] = [];
+	protected procedureParameters: ParameterInfo[] = [];
+	protected processValuesIn: ParameterInfo[] = [];
+	protected processValuesOut: ParameterInfo[] = [];
+	protected reportParameters: ParameterInfo[] = [];
 
 	protected constructor(name: string) {
 		super();
@@ -77,7 +77,7 @@ export abstract class POLService extends BaseService {
 
 	// Public methods
 
-	public json(): POLServiceInterface {
+	public json(): POLServiceInfo {
 		return {
 			id: this.id,
 			requestedProcedure: 0,
@@ -88,13 +88,13 @@ export abstract class POLService extends BaseService {
 				procedureId: 1,
 				name: 'default',
 				isSelfCompleting: this.selfCompleting,
-				parameters: this.procedureParameters,
+				procedureParameters: this.procedureParameters,
 				processValuesIn: this.processValuesIn,
 				processValuesOut: this.processValuesOut,
 				reportParameters: this.reportParameters
 			}],
 			currentProcedure: 0,
-			parameters: [],
+			configurationParameters: [],
 			state: ServiceState[this.state],
 			commandEnable: this.commandEnable,
 			lastChange: (new Date().getTime() - this.lastStatusChange.getTime()) / 1000
@@ -277,7 +277,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onStarting();
-		this.gotoExecute();
+		this.gotoExecute().then();
 	}
 
 	private async gotoRestarting(): Promise<void> {
@@ -295,7 +295,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onRestarting();
-		this.gotoExecute();
+		this.gotoExecute().then();
 	}
 
 	private async gotoExecute(): Promise<void> {
@@ -330,7 +330,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onPausing();
-		this.gotoPaused();
+		this.gotoPaused().then();
 	}
 
 	private async gotoPaused(): Promise<void> {
@@ -365,7 +365,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onResuming();
-		this.gotoExecute();
+		this.gotoExecute().then();
 	}
 
 	private async gotoCompleting(): Promise<void> {
@@ -383,7 +383,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onCompleting();
-		this.gotoCompleted();
+		this.gotoCompleted().then();
 	}
 
 	private async gotoCompleted(): Promise<void> {
@@ -418,7 +418,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onStopping();
-		this.gotoStopped();
+		this.gotoStopped().then();
 	}
 
 	private async gotoStopped(): Promise<void> {
@@ -453,7 +453,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onAborting();
-		this.gotoAborted();
+		this.gotoAborted().then();
 	}
 
 	private async gotoAborted(): Promise<void> {
@@ -489,7 +489,7 @@ export abstract class POLService extends BaseService {
 		});
 		await this.onResetting();
 		this.initParameter();
-		this.gotoIdle();
+		this.gotoIdle().then();
 	}
 
 	private async gotoIdle(): Promise<void> {
@@ -524,7 +524,7 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onHolding();
-		this.gotoHeld();
+		this.gotoHeld().then();
 	}
 
 	private async gotoHeld(): Promise<void> {
@@ -559,6 +559,6 @@ export abstract class POLService extends BaseService {
 			unhold: false
 		});
 		await this.onUnholding();
-		this.gotoExecute();
+		this.gotoExecute().then();
 	}
 }

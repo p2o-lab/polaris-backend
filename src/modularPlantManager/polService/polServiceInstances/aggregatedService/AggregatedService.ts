@@ -26,23 +26,13 @@
 
 import {BaseService, Service} from '../../../pea';
 import {POLService} from '../../POLService';
-import {POLServiceOptions} from '../../POLServiceFactory';
 import {Petrinet, PetrinetOptions} from './petrinet';
 
 import {Category} from 'typescript-logging';
 import {catAggregatedService} from '../../../../logging';
 import {PEA} from '../../../pea';
-import {ParameterInterface} from '@p2olab/polaris-interface';
+import {AggregatedServiceOptions} from '@p2olab/polaris-interface';
 
-export interface AggregatedServiceOptions extends POLServiceOptions {
-	type: 'aggregatedService';
-	description: string;
-	version: string;
-	necessaryServices: Array<{ pea: string; service: string }>;
-	parameters: ParameterInterface[];
-	stateMachine: StateMachineOptions;
-	commandEnable: CommandEnableOptions;
-}
 
 // CommandEnableOptions defines the conditions as expressions for the commands to be triggered externally
 export interface CommandEnableOptions {
@@ -147,7 +137,8 @@ export class AggregatedService extends POLService {
 	}
 
 	protected initParameter(): void {
-		this.procedureParameters = this.options.parameters;
+		// TODO: this need to be checked --> new Param vs referenced param
+		//this.procedureParameters = this.options.parameters;
 		this.selfCompleting = true;
 	}
 

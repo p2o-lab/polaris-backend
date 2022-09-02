@@ -27,6 +27,7 @@
 import Timeout = NodeJS.Timeout;
 import {POLService} from '../POLService';
 import {catTimer} from '../../../logging';
+import {randomUUID} from 'crypto';
 
 export class Timer extends POLService {
 
@@ -62,11 +63,11 @@ export class Timer extends POLService {
 
 	protected initParameter(): void {
 		this.procedureParameters = [
-			{name: 'duration', value: 10000, min: 1, unit: 'ms'},
-			{name: 'updateRate', value: 1000, min: 100, unit: 'ms'}
+			{id: randomUUID(), name: 'duration', value: 10000, valueLimitation: { min: 1, max: 1000000} , unit: 'ms'},
+			{id: randomUUID(), name: 'updateRate', value: 1000, valueLimitation: { min: 100, max: 1000000} , unit: 'ms'}
 		];
 		this.processValuesOut = [
-			{name: 'remainingTime', value: 10000, unit: 'ms', readonly: true},
+			{id: randomUUID(), name: 'remainingTime', value: 10000, unit: 'ms', readonly: true},
 		];
 		this.selfCompleting = true;
 	}

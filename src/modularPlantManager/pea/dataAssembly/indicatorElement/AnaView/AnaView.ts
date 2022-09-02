@@ -28,7 +28,7 @@ import {IndicatorElement} from '../IndicatorElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {AnaViewDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {AnaViewDataItems} from '@p2olab/pimad-types';
 
 
 export class AnaView extends IndicatorElement {

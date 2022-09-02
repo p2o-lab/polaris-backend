@@ -208,7 +208,7 @@ describe('Player', () => {
 			await service.waitForStateChangeWithTimeout('STARTING', 2000);
 			await service.waitForStateChangeWithTimeout('EXECUTE');
 
-			player.stop();
+			player.stop().then();
 			await service.waitForStateChangeWithTimeout('STOPPING');
 			await service.waitForStateChangeWithTimeout('STOPPED');
 

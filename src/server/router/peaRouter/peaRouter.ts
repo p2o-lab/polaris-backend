@@ -27,7 +27,7 @@ import {ModularPlantManager} from '../../../modularPlantManager';
 import {Request, Response, Router} from 'express';
 import * as asyncHandler from 'express-async-handler';
 import {catServer} from '../../../logging';
-import {AdapterConnectOptions, AdapterOptions, OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {OperationMode, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {PEAProvider} from '../../../peaProvider/PEAProvider';
 
 export const peaRouter: Router = Router();

@@ -120,18 +120,22 @@ export class OpcUaAdapter extends ConnectionAdapter {
 		const endpointUrl = this.endpoint;
 		if (!endpointUrl) throw new Error('Can not resolve endpoints without initial endpoint!');
 		const client = OPCUAClient.create({});
-		await client.connect(endpointUrl).catch((e)=>console.log(e));
-		const endpoints = await client.getEndpoints();
-		const reducedEndpoints: EndpointInfo[] = endpoints.map(endpoint => ({
-			endpointUrl: (endpoint.endpointUrl || '').toString(),
-			securityMode: endpoint.securityMode.toString(),
-			securityPolicy: endpoint.securityPolicyUri?.toString(),
-		}));
-		await client.disconnect();
-		this.availableEndpoints.clear();
-		reducedEndpoints.forEach((eP) => {
-			this.availableEndpoints.set(IDProvider.generateIdentifier(), eP);
-		});
+		await client.connect(endpointUrl).then(async () => {
+				const endpoints = await client.getEndpoints();
+				const reducedEndpoints: EndpointInfo[] = endpoints.map(endpoint => ({
+					endpointUrl: (endpoint.endpointUrl || '').toString(),
+					securityMode: endpoint.securityMode.toString(),
+					securityPolicy: endpoint.securityPolicyUri?.toString(),
+				}));
+				await client.disconnect();
+				this.availableEndpoints.clear();
+				reducedEndpoints.forEach((eP) => {
+					this.availableEndpoints.set(IDProvider.generateIdentifier(), eP);
+				});
+				this._initialized = true;
+			}
+		).catch((e)=>console.log(e));
+
 	}
 
 
@@ -259,8 +263,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 		const statusCode = await this.session.write(nodeToWrite);
 
 		if (statusCode.value !== 0) {
-			this.logger.warn(`Error while writing to OpcUA ${ciData.nodeId.identifier}=${value}: ${statusCode.description}`);
-			throw new Error(statusCode.description);
+			this.logger.warn(`Problem while writing to OpcUA ${ciData.nodeId.identifier}=${value}: ${statusCode.description}`);
 		}
 		return Promise.resolve();
 	}
@@ -560,6 +563,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 		});
 		return {
 			type: 'opcua',
+			initialized: this._initialized,
 			connected: this.connected,
 			currentEndpointId: this.currentEndpointId,
 			endpoints: endpoints,

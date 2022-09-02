@@ -52,7 +52,8 @@ describe('Recipe', () => {
 			description: '',
 			initialStep: '',
 			version: '',
-			steps: []
+			steps: [],
+			requirements: {peas: [], polServices: [], autoResetServicesOnceCompleted: false}
 		}, [])).to.throw('missing');
 	});
 
@@ -63,7 +64,8 @@ describe('Recipe', () => {
 			description: '',
 			initialStep: '',
 			version: '',
-			steps: []
+			steps: [],
+			requirements: {peas: [], polServices: [], autoResetServicesOnceCompleted: false}
 		}, [])).to.throw('not found');
 	});
 
@@ -74,7 +76,8 @@ describe('Recipe', () => {
 			description: '',
 			initialStep: 'initial',
 			version: '',
-			steps: []
+			steps: [],
+			requirements: {peas: [], polServices: [], autoResetServicesOnceCompleted: false}
 		}, [])).to.throw('not found');
 	});
 
@@ -90,7 +93,8 @@ describe('Recipe', () => {
 						nextStep: 'notexisting',
 						condition: {type: ConditionType.time, duration: 1}
 					}]
-				}]
+				}],
+				requirements: {peas: [], polServices: [], autoResetServicesOnceCompleted: false}
 			}
 			, [])).to.throw('not found');
 	});
@@ -102,8 +106,10 @@ describe('Recipe', () => {
 			description: '',
 			initialStep: 'initial',
 			version: '',
-			steps: [{name: 'initial', operations: [], transitions: []}]
-		}, []))
+			steps: [{name: 'initial', operations: [], transitions: []}],
+			requirements: {peas: [], polServices: [], autoResetServicesOnceCompleted: false}
+		}
+		, []))
 			.to.have.property('id');
 	});
 

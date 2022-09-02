@@ -73,6 +73,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	public readonly id = IDProvider.generateIdentifier();
 	public readonly name: string = 'GenericConnectionAdapter';
 	protected readonly logger: Category = catConnectionAdapter;
+	protected _initialized = false;
 
 	/**
 	 * Indicator if this client is currently connected to endpoint
@@ -172,6 +173,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 		return {
 			type: 'OpcUa',
 			connected: this.connected,
+			initialized: this._initialized,
 			id: this.id,
 			monitoredItemsCount: this.monitoredDataItemCount(),
 			monitoringActive: false,

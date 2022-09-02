@@ -23,7 +23,7 @@
 * SOFTWARE.
 */
 
-import {BaseServiceInterface} from '@p2olab/polaris-interface';
+import {BaseServiceInfo} from '@p2olab/polaris-interface';
 import {Service, ServiceRelation} from '../index';
 
 import {EventEmitter} from 'events';
@@ -45,12 +45,12 @@ export interface ServiceSetEvents {
 	 * Notify when a [[Service] is added
 	 * @event BaseServiceInterface
 	 */
-	serviceAdded: BaseServiceInterface;
+	serviceAdded: BaseServiceInfo;
 	/**
 	 * Notify when a [[Service] is removed
 	 * @event BaseServiceInterface
 	 */
-	serviceRemoved: BaseServiceInterface;
+	serviceRemoved: BaseServiceInfo;
 }
 
 type ServiceSetEmitter = StrictEventEmitter<EventEmitter, ServiceSetEvents>;

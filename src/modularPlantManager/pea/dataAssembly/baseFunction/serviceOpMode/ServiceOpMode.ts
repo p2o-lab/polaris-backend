@@ -114,7 +114,7 @@ export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitt
 	public async setToAutomaticOperationMode(): Promise<void> {
 		catDataAssembly.info(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);
 		if (!this.isAutomaticState()) {
-			this.writeOpMode(OperationMode.Automatic);
+			await this.writeOpMode(OperationMode.Automatic);
 			await this.waitForServiceOpModeToPassSpecificTest(OperationMode.Automatic);
 		}
 		catDataAssembly.info(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);
@@ -127,7 +127,7 @@ export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitt
 	public async setToOperatorOperationMode(): Promise<void> {
 		catDataAssembly.info(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);
 		if (!this.isOperatorState()) {
-			this.writeOpMode(OperationMode.Operator);
+			await this.writeOpMode(OperationMode.Operator);
 			await this.waitForServiceOpModeToPassSpecificTest(OperationMode.Operator);
 		}
 		catDataAssembly.info(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);
@@ -140,7 +140,7 @@ export class ServiceOpMode extends (EventEmitter as new () => ServiceOpModeEmitt
 	public async setToOfflineOperationMode(): Promise<void> {
 		catDataAssembly.debug(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);
 		if (!this.isOfflineState()) {
-			this.writeOpMode(OperationMode.Offline);
+			await this.writeOpMode(OperationMode.Offline);
 			await this.waitForServiceOpModeToPassSpecificTest(OperationMode.Offline);
 		}
 		catDataAssembly.debug(`Current ServiceOpMode = ${this.getServiceOperationMode()}`);

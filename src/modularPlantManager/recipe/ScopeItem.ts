@@ -127,9 +127,9 @@ export class ScopeItem {
 			procedure = service.requestedProcedure;
 			if (procedure){
 				// TODO: This needs to be reviewed and reworked
-			dataAssembly = service.parameters.find((p: DataAssembly) => p.name === token);
+			dataAssembly = service.configurationParameters.find((p: DataAssembly) => p.name === token);
 			if (!dataAssembly) {
-				dataAssembly = procedure.parameters.find((p: DataAssembly) => p.name === token);
+				dataAssembly = procedure.procedureParameters.find((p: DataAssembly) => p.name === token);
 			}
 			if (!dataAssembly) {
 				dataAssembly = procedure.processValuesIn.find((p: DataAssembly) => p.name === token);

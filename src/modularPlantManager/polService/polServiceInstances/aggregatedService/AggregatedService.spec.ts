@@ -42,14 +42,15 @@ describe('AggregatedService', () => {
 			name: 'as_test',
 			type: 'aggregatedService',
 			necessaryServices: [
-				{pea: '', service: 't1'},
-				{pea: '', service: 't2'}
+				{pea: '', service: 't1', procedure: ''},
+				{pea: '', service: 't2', procedure: ''}
 			],
 			description: 'boring sync',
 			version: '1.0.0',
 			parameters: [],
 			commandEnable: {} as CommandEnableOptions,
-			stateMachine: {} as StateMachineOptions
+			stateMachine: {} as StateMachineOptions,
+			selfCompleting: false
 		}, [], [t1, t2]);
 		expect(as.services).to.have.lengthOf(2);
 		expect(as.peas).to.have.lengthOf(0);

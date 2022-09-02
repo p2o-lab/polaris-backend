@@ -24,7 +24,7 @@
  */
 
 import {ConditionOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../pea/PEA';
+import {PEA} from '../pea';
 
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
@@ -53,7 +53,7 @@ export abstract class Condition extends (EventEmitter as new() => ConditionEmitt
 		this.options = options;
 
 		if ('pea' in options && options.pea && peaSet) {
-			this.usedPEA = peaSet.find((p) => p.id === options.pea);
+			this.usedPEA = peaSet.find((p) => p.name === options.pea);
 		}
 	}
 

@@ -28,6 +28,7 @@ import {POLService} from '../POLService';
 // eslint-disable-next-line no-undef
 import Timeout = NodeJS.Timeout;
 import {Expression, Parser} from 'expr-eval';
+import {randomUUID} from 'crypto';
 
 /**
  * Function Generator
@@ -102,11 +103,11 @@ export class FunctionGenerator extends POLService {
 
 	protected initParameter(): void {
 		this.procedureParameters = [
-			{name: 'function', value: 'sin(t)'},
-			{name: 'updateRate', value: 1000, unit: 'ms', min: 1}
+			{id: randomUUID(), name: 'function', value: 'sin(t)'},
+			{id: randomUUID(), name: 'updateRate', value: 1000, unit: 'ms', valueLimitation:{min: 1, max: 500000}}
 		];
 		this.processValuesOut = [
-			{name: 'output', value: undefined, readonly: true}
+			{id: randomUUID(), name: 'output', value: undefined, readonly: true}
 		];
 	}
 }

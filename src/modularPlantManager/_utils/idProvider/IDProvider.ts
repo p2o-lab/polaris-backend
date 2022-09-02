@@ -36,4 +36,5 @@ export class IDProvider {
 	public static validIdentifier(identifier: string): boolean {
 		return validate(identifier);
 	}
+
 }

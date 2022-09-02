@@ -25,8 +25,8 @@
 
 import {
 	DataAssemblyOptions,
-	ParameterInterface,
-	ProcedureInterface,
+	ParameterInfo,
+	ProcedureInfo,
 	ProcedureOptions
 } from '@p2olab/polaris-interface';
 import {
@@ -45,7 +45,7 @@ import {DataAssemblyModel, ProcedureModel} from '@p2olab/pimad-interface';
 
 export interface ProcedureEvents {
 	parameterChanged: {
-		parameter: ParameterInterface;
+		parameter: ParameterInfo;
 		parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue';
 	};
 }
@@ -62,22 +62,22 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	public readonly processValuesIn: InputElement[] = [];
 	public readonly processValuesOut: IndicatorElement[] = [];
 	public readonly reportParameters: IndicatorElement[] = [];
-	public readonly parameters: ServParam[] = [];
+	public readonly procedureParameters: ServParam[] = [];
 	private readonly logger: Category;
 
 	constructor(options: ProcedureModel, connectionHandler: ConnectionHandler) {
 		super();
 
-		const procedureId = parseInt(options.attributes.find(a => a.name === 'ProcedureID')!.value);
+		const procedureId = parseInt(options?.attributes.find(a => a.name === 'ProcedureID')!.value);
 
 		if (!Procedure.validProcedureId(procedureId)){
 			throw new Error(`The procedure id should be Int and greater than 0 - got ${procedureId}`);
 		}
 		this.procedureId = procedureId;
 		this.name = options.name;
-		this.selfCompleting = options.attributes.find(a => a.name === 'ProcedureID')!.value === 'true';
+		this.selfCompleting = options?.attributes.find(a => a.name === 'ProcedureID')?.value === 'true';
 		if (options.parameters) {
-			this.parameters = options.parameters
+			this.procedureParameters = options.parameters
 				.map((daOptions: DataAssemblyModel) => DataAssemblyFactory.create(daOptions, connectionHandler) as ServParam);
 		}
 		if (options.processValuesIn) {
@@ -96,27 +96,27 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	}
 
 	public async subscribe(): Promise<Procedure> {
-		this.logger.debug(`Subscribe to procedure ${this.name}: ${JSON.stringify(this.parameters.map((p) => p.name))}`);
+		this.logger.debug(`Subscribe to procedure ${this.name}: ${JSON.stringify(this.procedureParameters.map((p) => p.name))}`);
 		await Promise.all([
-			this.parameters.map((param) => {
-				param.on('changed',
-					() => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'parameter'}));
-				return param.subscribe();
+			this.procedureParameters.map((p) => {
+				p.on('changed',
+					() => this.emit('parameterChanged', {parameter: p.toJson(), parameterType: 'parameter'}));
+				return p.subscribe();
 			}),
-			this.processValuesIn.map((pv) => {
-				pv.on('changed',
-					() => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueIn'}));
-				return pv.subscribe();
+			this.processValuesIn.map((p) => {
+				p.on('changed',
+					() => this.emit('parameterChanged', {parameter: p.toJson(), parameterType: 'processValueIn'}));
+				return p.subscribe();
 			}),
-			this.processValuesOut.map((pv) => {
-				pv.on('changed',
-					() => this.emit('parameterChanged', {parameter: pv.toJson(), parameterType: 'processValueOut'}));
-				return pv.subscribe();
+			this.processValuesOut.map((p) => {
+				p.on('changed',
+					() => this.emit('parameterChanged', {parameter: p.toJson(), parameterType: 'processValueOut'}));
+				return p.subscribe();
 			}),
-			this.reportParameters.map((param) => {
-				param.on('changed',
-					() => this.emit('parameterChanged', {parameter: param.toJson(), parameterType: 'reportValue'}));
-				return param.subscribe();
+			this.reportParameters.map((p) => {
+				p.on('changed',
+					() => this.emit('parameterChanged', {parameter: p.toJson(), parameterType: 'reportValue'}));
+				return p.subscribe();
 			})
 		]);
 		this.logger.debug(`Subscribed to procedure ${this.name}`);
@@ -124,22 +124,22 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	}
 
 	public unsubscribe(): void {
-		this.parameters.forEach((param) => param.unsubscribe());
-		this.processValuesIn.forEach((pv) => pv.unsubscribe());
-		this.processValuesOut.forEach((pv) => pv.unsubscribe());
-		this.reportParameters.forEach((pv) => pv.unsubscribe());
+		this.procedureParameters.forEach((p) => p.unsubscribe());
+		this.processValuesIn.forEach((p) => p.unsubscribe());
+		this.processValuesOut.forEach((p) => p.unsubscribe());
+		this.reportParameters.forEach((p) => p.unsubscribe());
 	}
 
-	public toJson(): ProcedureInterface {
+	public toJson(): ProcedureInfo {
 		return {
 			id: this.id,
 			procedureId: this.procedureId,
 			name: this.name,
 			isSelfCompleting: this.selfCompleting,
-			parameters: this.parameters.map((param) => param.toJson()),
-			processValuesIn: this.processValuesIn.map((param) => param.toJson()),
-			processValuesOut: this.processValuesOut.map((param) => param.toJson()),
-			reportParameters: this.reportParameters.map((param) => param.toJson())
+			procedureParameters: this.procedureParameters.map((p) => p.toJson()),
+			processValuesIn: this.processValuesIn.map((p) => p.toJson()),
+			processValuesOut: this.processValuesOut.map((p) => p.toJson()),
+			reportParameters: this.reportParameters.map((p) => p.toJson())
 		};
 	}
 
@@ -148,7 +148,7 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 		this.processValuesIn.forEach((inputElement) => result.push(inputElement.toDataAssemblyOptionsJson()));
 		this.processValuesOut.forEach((indicatorElement) => result.push(indicatorElement.toDataAssemblyOptionsJson()));
 		this.reportParameters.forEach((indicatorElement) => result.push(indicatorElement.toDataAssemblyOptionsJson()));
-		this.parameters.forEach((serviceParameter) => result.push(serviceParameter.toDataAssemblyOptionsJson()));
+		this.procedureParameters.forEach((serviceParameter) => result.push(serviceParameter.toDataAssemblyOptionsJson()));
 		return result;
 	}
 
@@ -161,7 +161,7 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 		this.processValuesIn.forEach((inputElement) => result.push(inputElement.getDataAssemblyInfo()));
 		this.processValuesOut.forEach((indicatorElement) => result.push(indicatorElement.getDataAssemblyInfo()));
 		this.reportParameters.forEach((indicatorElement) => result.push(indicatorElement.getDataAssemblyInfo()));
-		this.parameters.forEach((serviceParameter) => result.push(serviceParameter.getDataAssemblyInfo()));
+		this.procedureParameters.forEach((serviceParameter) => result.push(serviceParameter.getDataAssemblyInfo()));
 		return result;
 	}
 }

@@ -26,12 +26,12 @@
 import {PEA} from '../pea';
 import {
 	AggregatedService,
-	AggregatedServiceOptions,
 	FunctionGenerator,
 	PidController,
 	POLService,
 	Storage, Timer
 } from './';
+import {AggregatedServiceOptions} from '@p2olab/polaris-interface';
 
 export interface POLServiceOptions {
 	name: string;

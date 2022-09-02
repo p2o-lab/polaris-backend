@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {DataAssemblyOptions, ParameterInterface} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInfo} from '@p2olab/polaris-interface';
 import {EventEmitter} from 'events';
 import {catDataAssembly} from '../../../logging';
 import {DataItemFactory, getDataItemModel} from './dataItem/DataItemFactory';
@@ -33,6 +33,7 @@ import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {DataAssemblyDataItems, DataItem, POLDataType} from '@p2olab/pimad-types';
 import {BaseDataItem} from './dataItem/DataItem';
+import {randomUUID} from 'crypto';
 
 
 /**
@@ -46,6 +47,7 @@ type DataAssemblyEmitter = StrictEventEmitter<EventEmitter, DataAssemblyEvents>;
 
 export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) {
 
+	public readonly id: string;
 	public readonly name: string;
 	public readonly metaModelRef: string;
 	public readonly connectionHandler: ConnectionHandler;
@@ -65,6 +67,7 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 		super();
 
 		this.options = options;
+		this.id = randomUUID();
 		this.name = options.name;
 		this.metaModelRef = options.metaModelRef;
 		this.subscriptionActive = false;
@@ -178,9 +181,10 @@ export class DataAssembly extends (EventEmitter as new()=> DataAssemblyEmitter) 
 		};
 	}
 
-	public toJson(): ParameterInterface {
+	public toJson(): ParameterInfo {
 		return {
-			name: this.name
+			name: this.name,
+			id: this.id
 		};
 	}
 	

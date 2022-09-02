@@ -71,12 +71,8 @@ type ConnectionEmitter = StrictEventEmitter<EventEmitter, ConnectionEvents>;
 export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitter) {
 
 	public readonly id: string = IDProvider.generateIdentifier();
-
-	public connectionEstablished = false;
 	private _connectionAdapters: ConnectionAdapter[] = [];
-
 	private monitoredDataItems: Map<string, CIData> = new Map<string, CIData>();
-
 
 	constructor() {
 		super();
@@ -98,7 +94,7 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		return {
 			adapterInfo: this._connectionAdapters.map(adapter => adapter.getConnectionAdapterInfo()),
 			id: this.id,
-			connected: this.connected(),
+			everyAdapterConnected: this.connected(),
 			name: 'GenericConnectionHandler'
 		};
 	}
@@ -266,13 +262,11 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
 		if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
 		await resolvedAdapter.initialize(options); // TODO: change the method
-		this.emit('changed');
 	}
 
 	async initializeConnectionAdapter(adapterId: string) {
 		const resolvedAdapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
 		if (!resolvedAdapter) throw new Error('Specified adapter can not be found');
 		await resolvedAdapter.initialize();
-		this.emit('changed');
 	}
 }

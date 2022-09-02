@@ -24,9 +24,9 @@
  */
 
 import {
-	BaseServiceInterface,
+	BaseServiceInfo,
 	CommandEnableInfo, OperationMode,
-	ParameterInterface,
+	ParameterInfo,
 	ParameterOptions,
 	ServiceCommand, ServiceSourceMode
 } from '@p2olab/polaris-interface';
@@ -63,13 +63,13 @@ export interface BaseServiceEvents extends DataAssemblyEvents {
 	commandExecuted: {
 		procedure: Procedure;
 		command: ServiceCommand;
-		parameter: ParameterInterface[];
+		parameter: ParameterInfo[];
 		scope?: [];
 	};
 
 	parameterChanged: {
 		procedure?: Procedure;
-		parameter: ParameterInterface;
+		parameter: ParameterInfo;
 		parameterType: 'parameter' | 'processValueIn' | 'processValueOut' | 'reportValue';
 	};
 	opMode: OperationMode;
@@ -119,7 +119,7 @@ export abstract class BaseService extends (EventEmitter as new() => BaseServiceE
 		this._selfCompleting = value;
 	}
 
-	public abstract json(): BaseServiceInterface;
+	public abstract json(): BaseServiceInfo;
 
 	public abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEA[]): Promise<void>;
 
@@ -138,14 +138,14 @@ export abstract class BaseService extends (EventEmitter as new() => BaseServiceE
 	 * Execute commandNode
 	 *
 	 * @param {ServiceCommand} command
-	 * @returns {Promise<boolean>}
+	 * @returns {Promise<void>}
 	 */
 	public async executeCommand(command: ServiceCommand): Promise<void> {
-		//TODO: this check does not work properly
-	/*	if (!this.isCommandExecutable(command)) {
+		//TODO: this check seems to not work properly
+		if (!this.isCommandExecutable(command)) {
 			catService.info(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
-			throw new Error(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
-		}*/
+			return Promise.reject(`[${this.qualifiedName}] ControlOp does not allow command ${command}`);
+		}
 		let result;
 		if (command === ServiceCommand.start) {
 			result = this.start();

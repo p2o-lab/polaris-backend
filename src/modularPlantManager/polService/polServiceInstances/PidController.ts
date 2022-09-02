@@ -23,12 +23,13 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface, ParameterOptions} from '@p2olab/polaris-interface';
+import {ParameterInfo, ParameterOptions} from '@p2olab/polaris-interface';
 import {ServiceState} from '../../pea/dataAssembly';
 import {Parameter} from '../../recipe';
 import {POLService} from '../POLService';
 
 import * as Controller from 'node-pid-controller';
+import {randomUUID} from 'crypto';
 
 export class PidController extends POLService {
 	public static type = 'pidController';
@@ -43,7 +44,7 @@ export class PidController extends POLService {
 
 	set output(value: number) {
 		this._output = value;
-		const parameterInterface: ParameterInterface | undefined = this.procedureParameters.find((p) => p.name === 'output');
+		const parameterInterface: ParameterInfo | undefined = this.procedureParameters.find((p) => p.name === 'output');
 		if(parameterInterface) {
 			parameterInterface.value = this._output;
 		}
@@ -74,16 +75,16 @@ export class PidController extends POLService {
 
 	protected initParameter(): void {
 		this.procedureParameters = [
-			{name: 'p', value: 0.25},
-			{name: 'i', value: 0.01},
-			{name: 'd', value: 0.01}
+			{id: randomUUID(), name: 'p', value: 0.25},
+			{id: randomUUID(), name: 'i', value: 0.01},
+			{id: randomUUID(), name: 'd', value: 0.01}
 		];
 		this.processValuesIn = [
-			{name: 'setpoint', value: undefined},
-			{name: 'input', value: undefined}
+			{id: randomUUID(), name: 'setpoint', value: undefined},
+			{id: randomUUID(), name: 'input', value: undefined}
 		];
 		this.processValuesOut = [
-			{name: 'output', value: undefined, readonly: true},
+			{id: randomUUID(), name: 'output', value: undefined, readonly: true},
 		];
 	}
 

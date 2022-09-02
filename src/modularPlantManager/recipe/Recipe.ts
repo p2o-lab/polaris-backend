@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {RecipeInterface, RecipeOptions, RecipeState, StepInterface} from '@p2olab/polaris-interface';
+import {RecipeInterface, RecipeOptions, RecipeReferenceInstanceMappingInfo, RecipeState, StepInterface} from '@p2olab/polaris-interface';
 import {PEA} from '../pea';
 import {Step} from './step/Step';
 import {Transition} from './step/transition/Transition';
@@ -131,9 +131,19 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	 * @returns {RecipeInterface}
 	 */
 	public json(): RecipeInterface {
+		const referenceInfo: RecipeReferenceInstanceMappingInfo[] = [];
+		this.peaSet.forEach((p) => {
+			referenceInfo.push(
+				{type: 'pea',
+			recipeObjectReference: p.id,
+			instanceReference: undefined
+			}
+			);
+		}
+		);
 		return {
 			id: this.id,
-			peas: Array.from(this.peaSet).map((p) => p.id),
+			referencedObjects: referenceInfo,
 			status: this.status,
 			currentStep: this.currentStep ? this.currentStep.json() : {} as StepInterface,
 			options: this.options,
@@ -162,15 +172,15 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	 */
 	public async start(): Promise<Recipe> {
 		if (this.status === RecipeState.running) {
-			throw new Error('Recipe is already running');
+			return Promise.reject('Recipe is already running');
 		}
-		this.currentStep = this.initialStep;
-		this.status = RecipeState.running;
 		await this.connectPEAs()
 			.catch((reason) => {
-				throw new Error(`Could not connect to all PEAs for recipe ${this.name}. ` +
+				return Promise.reject(`Could not connect to all PEAs for recipe ${this.name}. ` +
 					`Start of recipe not possible: ${reason.toString()}`);
 			});
+		this.currentStep = this.initialStep;
+		this.status = RecipeState.running;
 		this.executeStep();
 		this.emit('started');
 		return this;
@@ -179,13 +189,13 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	/**
 	 * Pause the recipe by pausing all peas
 	 */
-	public pause(): void {
+	public async pause(): Promise<void> {
 		if (this.status !== RecipeState.running) {
 			throw new Error('Can only pause running recipe');
 		}
-		this.peaSet.forEach((peaController) => {
-			peaController.pauseAllServices().then();
-		});
+		await Promise.all(Array.from(this.peaSet).map((peaController) => {
+			peaController.pauseAllServices();
+		}));
 	}
 
 	/**
@@ -212,27 +222,29 @@ export class Recipe extends (EventEmitter as new() => RecipeEmitter) {
 	}
 
 	private executeStep(): void {
-		catRecipe.info(`Execute step: ${this.currentStep!.name}`);
-		this.lastChange = new Date();
-		this.currentStep!
-			.on('operationChanged', () => {
-				this.emit('changed');
-			})
-			.once('completed', (transition: Transition) => {
-				this.stepListener!.removeAllListeners('operationChanged');
-				if (transition.nextStep) {
-					catRecipe.info(`Step ${this.currentStep!.name} finished. New step is ${transition.nextStepName}`);
-					this.currentStep = transition.nextStep;
-					this.executeStep();
-				} else {
-					catRecipe.info(`Recipe completed: ${this.name}`);
-					this.currentStep = undefined;
-					this.status = RecipeState.completed;
-					this.emit('completed');
-				}
-				this.emit('changed');
-			});
-		this.currentStep!.execute();
+		if (this.currentStep && this.stepListener) {
+			catRecipe.info(`Execute step: ${this.currentStep.name}`);
+			this.lastChange = new Date();
+			this.currentStep
+				.on('operationChanged', () => {
+					this.emit('changed');
+				})
+				.once('completed', (transition: Transition) => {
+					this.stepListener?.removeAllListeners('operationChanged');
+					if (transition.nextStep) {
+						catRecipe.info(`Step ${this.currentStep?.name} finished. New step is ${transition.nextStepName}`);
+						this.currentStep = transition.nextStep;
+						this.executeStep();
+					} else {
+						catRecipe.info(`Recipe completed: ${this.name}`);
+						this.currentStep = undefined;
+						this.status = RecipeState.completed;
+						this.emit('completed');
+					}
+					this.emit('changed');
+				});
+			this.currentStep.execute();
+		}
 	}
 
 }

@@ -28,7 +28,7 @@ import {InputElement} from '../../';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {AnaProcessValueInDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {AnaProcessValueInDataItems} from '@p2olab/pimad-types';
 
 
 export class AnaProcessValueIn extends InputElement {

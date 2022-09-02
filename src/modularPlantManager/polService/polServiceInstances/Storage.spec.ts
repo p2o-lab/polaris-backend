@@ -35,19 +35,19 @@ describe('Storage', () => {
 
 	it('should work', async () => {
 		const s1 = new Storage('s1');
-		let params = s1.json().procedures[0].parameters;
+		let params = s1.json().procedures[0].procedureParameters;
 		expect(params).to.have.lengthOf(1);
 		expect(params[0]).to.have.property('name', 'storage');
 		expect(params[0]).to.have.property('value', undefined);
 
 		await s1.setParameters([{name: 'storage', value: 2}]);
-		params = s1.json().procedures[0].parameters;
+		params = s1.json().procedures[0].procedureParameters;
 		expect(params).to.have.lengthOf(1);
 		expect(params[0]).to.have.property('name', 'storage');
 		expect(params[0]).to.have.property('value', 2);
 
 		await s1.setParameters([{name: 'storage', value: 'teststring'}]);
-		params = s1.json().procedures[0].parameters;
+		params = s1.json().procedures[0].procedureParameters;
 		expect(params).to.have.lengthOf(1);
 		expect(params[0]).to.have.property('name', 'storage');
 		expect(params[0]).to.have.property('value', 'teststring');
@@ -55,7 +55,7 @@ describe('Storage', () => {
 		await s1.start();
 		await s1.complete();
 		await s1.reset();
-		params = s1.json().procedures[0].parameters;
+		params = s1.json().procedures[0].procedureParameters;
 		expect(params).to.have.lengthOf(1);
 	});
 });

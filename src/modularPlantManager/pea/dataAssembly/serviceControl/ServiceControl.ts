@@ -36,7 +36,7 @@ import {ServiceOpMode} from '../baseFunction/serviceOpMode/ServiceOpMode';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {MTPDataTypes, ServiceControlDataItems} from '@p2olab/pimad-types';
+import {ServiceControlDataItems} from '@p2olab/pimad-types';
 import {BaseDataItem} from '../dataItem/DataItem';
 
 /**

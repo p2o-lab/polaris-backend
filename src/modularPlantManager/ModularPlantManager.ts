@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {BackendNotification, PEAInterface, POLServiceInterface, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange,} from '@p2olab/polaris-interface';
+import {BackendNotification, PEAInfo, POLServiceInfo, POLServiceOptions, RecipeOptions, ServiceCommand, VariableChange} from '@p2olab/polaris-interface';
 import {catManager, ServiceLogEntry} from '../logging';
 import {ParameterChange, PEA, Service} from './pea';
 import {ServiceState} from './pea/dataAssembly';
@@ -123,10 +123,10 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	}
 
 	/**
-	 * get all PEAController as json
+	 * get all PEAs as json
 	 * @returns {PEAInterface[]}
 	 */
-	public getAllPEAs(): PEAInterface[] {
+	public getAllPEAs(): PEAInfo[] {
 		return this.peas.map((pea) => pea.json());
 	}
 
@@ -134,7 +134,7 @@ export class ModularPlantManager extends (EventEmitter as new() => ModularPlantM
 	 * get all POLServices as json
 	 * @returns {POLServiceInterface[]}
 	 */
-	public getPOLServices(): POLServiceInterface[] {
+	public getPOLServices(): POLServiceInfo[] {
 		return this.polServices.map((ps) => ps.json());
 	}
 

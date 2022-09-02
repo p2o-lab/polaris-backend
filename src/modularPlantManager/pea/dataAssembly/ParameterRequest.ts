@@ -40,7 +40,6 @@ import {ScopeOptions} from '@p2olab/polaris-interface';
 
 import {Expression, Parser} from 'expr-eval';
 import {BaseDataItem} from './dataItem/DataItem';
-import {MTPDataTypes} from '@p2olab/pimad-types';
 
 class ScopeItem {
 
@@ -136,9 +135,9 @@ class ScopeItem {
 			}
 			token = components.shift();
 
-			dataAssembly = service.parameters.find((p: DataAssembly) => p.name === token);
+			dataAssembly = service.configurationParameters.find((p: DataAssembly) => p.name === token);
 			if (!dataAssembly) {
-				procedure.parameters.find((p: DataAssembly) => p.name === token);
+				procedure.procedureParameters.find((p: DataAssembly) => p.name === token);
 			}
 			if (!dataAssembly) {
 				procedure.processValuesIn.find((p: DataAssembly) => p.name === token);

@@ -31,8 +31,6 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {AnaDrvMockup, getAnaDrvDataAssemblyModel} from './AnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {Drv} from '../Drv';
-import {DrvMockup} from '../Drv.mockup';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);

@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {ParameterInterface} from '@p2olab/polaris-interface';
+import {ParameterInfo} from '@p2olab/polaris-interface';
 import {DataAssembly} from '../DataAssembly';
 import {WQC} from '../baseFunction';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
@@ -53,11 +53,12 @@ export class IndicatorElement extends DataAssembly {
 		this.wqc = new WQC(this.dataItems);
 	}
 
-	public toJson(): ParameterInterface {
+	public toJson(): ParameterInfo {
 		return {
 			name: this.name,
+			id: this.id,
 			value: this.getDefaultReadValue(),
-			type: this.defaultReadDataItemType,
+			parameterType: this.defaultReadDataItemType,
 			timestamp: this.getLastDefaultReadValueUpdate(),
 			readonly: true
 		};

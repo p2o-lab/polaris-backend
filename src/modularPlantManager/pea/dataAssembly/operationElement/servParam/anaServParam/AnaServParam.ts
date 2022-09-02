@@ -32,7 +32,7 @@ import {
 } from '../../../baseFunction';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {AnaServParamDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {AnaServParamDataItems} from '@p2olab/pimad-types';
 
 export class AnaServParam extends ServParam {
 

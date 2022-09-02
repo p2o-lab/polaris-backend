@@ -45,9 +45,9 @@ describe('ConnectionHandler', () => {
 	it('should reject connecting to a server with not existing endpoint', async () => {
 		const connectionHandler = new ConnectionHandler();
 		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(''));
-		expect(connectionHandler.connectionEstablished).to.equal(false);
+		expect(connectionHandler.connected()).to.equal(false);
 		await expect(connectionHandler.connectAdapter(adapterId)).to.be.rejected;
-		expect(connectionHandler.connectionEstablished).to.equal(false);
+		expect(connectionHandler.connected()).to.equal(false);
 	}).timeout(5000);
 
 
@@ -58,14 +58,14 @@ describe('ConnectionHandler', () => {
 		await mockupServer.start();
 		const connectionHandler = new ConnectionHandler();
 		const adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-		expect(connectionHandler.connectionEstablished).to.equal(false);
+		expect(connectionHandler.connected).to.equal(false);
 		await connectionHandler.connectAdapter(adapterId);
 			await connectionHandler.startMonitoring(adapterId);
-		expect(connectionHandler.connectionEstablished).to.equal(true);
+		expect(connectionHandler.connected).to.equal(true);
 
 		await new Promise<void>((resolve) => {
 			connectionHandler.once('disconnected', () => {
-				expect(connectionHandler.connectionEstablished).to.equal(false);
+				expect(connectionHandler.connected).to.equal(false);
 				resolve();
 			});
 			mockupServer.shutdown();
@@ -110,11 +110,11 @@ describe('ConnectionHandler', () => {
 
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			expect(connectionHandler.connectionEstablished).to.equal(false);
+			expect(connectionHandler.connected).to.equal(false);
 
 			await connectionHandler.connectAdapter(adapterId);
 			await connectionHandler.startMonitoring(adapterId);
-			expect(connectionHandler.connectionEstablished).to.equal(true);
+			expect(connectionHandler.connected).to.equal(true);
 
 			await connectionHandler.readDataItemValue({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}})
 				.then((result) => expect(result?.value.value).to.equal(false));
@@ -124,7 +124,7 @@ describe('ConnectionHandler', () => {
 		it('should connect to a opc ua test server, subscribe to one opc ua item and disconnect', async () => {
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			expect(connectionHandler.connectionEstablished).to.equal(false);
+			expect(connectionHandler.connected).to.equal(false);
 
 			await connectionHandler.connectAdapter(adapterId);
 			await connectionHandler.startMonitoring(adapterId);
@@ -165,11 +165,11 @@ describe('ConnectionHandler', () => {
 		it('should not add same nodeId, invalid namespace should throw, should listen to multiple items', async () => {
 			const connectionHandler = new ConnectionHandler();
 			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
-			expect(connectionHandler.connectionEstablished).to.equal(false);
+			expect(connectionHandler.connected).to.equal(false);
 
 			await connectionHandler.connectAdapter(adapterId);
 			await connectionHandler.startMonitoring(adapterId);
-			expect(connectionHandler.connectionEstablished).to.equal(true);
+			expect(connectionHandler.connected).to.equal(true);
 
 			connectionHandler.addDataItemToMonitoring({nodeId: {identifier: 'trigger', namespaceIndex: mockupServerNamespace, access: Access.ReadWriteAccess}});
 			expect(connectionHandler.monitoredDataItemsCount()).equals(1);

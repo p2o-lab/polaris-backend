@@ -24,6 +24,7 @@
  */
 
 import {POLService} from '../POLService';
+import {randomUUID} from 'crypto';
 
 export class Storage extends POLService {
 
@@ -35,7 +36,7 @@ export class Storage extends POLService {
 	}
 
 	protected initParameter(): void {
-		this.procedureParameters = [{name: 'storage', value: undefined}];
+		this.procedureParameters = [{id: randomUUID(), name: 'storage', value: undefined}];
 	}
 
 }

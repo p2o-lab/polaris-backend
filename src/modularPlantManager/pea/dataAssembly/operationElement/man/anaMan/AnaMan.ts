@@ -28,7 +28,7 @@ import {OperationElement} from '../../OperationElement';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {AnaManDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {AnaManDataItems} from '@p2olab/pimad-types';
 
 
 export class AnaMan extends OperationElement {

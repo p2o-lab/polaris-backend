@@ -26,10 +26,10 @@
 import {
 	AdapterConnectOptions,
 	AdapterOptions,
-	CommandEnableInfo, ConnectionInfo, DataAssemblyOptions, OpcUaAdapterOptions, OperationMode,
-	ParameterInterface, PEAInterface,
+	CommandEnableInfo, ConnectionInfo, OpcUaAdapterOptions, OperationMode,
+	ParameterInfo, PEAInfo,
 	ServiceCommand,
-	ServiceInterface, ServiceSourceMode,
+	ServiceInfo, ServiceSourceMode,
 	VariableChange
 } from '@p2olab/polaris-interface';
 import {BaseDataItem, DataItemEmitter} from './connectionHandler';
@@ -147,7 +147,7 @@ interface PEAEvents {
 		service: Service;
 		procedure: Procedure;
 		command: ServiceCommand;
-		parameter: ParameterInterface[];
+		parameter: ParameterInfo[];
 	};
 
 	/**
@@ -227,7 +227,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 		return service;
 	}
 
-	public getServiceStates(): ServiceInterface[] {
+	public getServiceStates(): ServiceInfo[] {
 		this.logger.trace(`[${this.id}] check service states`);
 		return this.services.map((service) => service.json());
 	}
@@ -288,7 +288,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 	 * Get JSON serialisation of PEAController
 	 * @returns {PEAInterface} (can be passed to frontend e.g.)
 	 */
-	public json(): PEAInterface {
+	public json(): PEAInfo {
 		return {
 			name: this.name,
 			id: this.id,
@@ -296,7 +296,7 @@ export class PEA extends (EventEmitter as new() => PEAEmitter) {
 			description: '',
 			connectionInfo: this.getConnectionInfo(),
 			services: this.getServiceStates(),
-			processValues: [],
+			dataAssemblies: [],
 			protected: this.protected
 		};
 	}
