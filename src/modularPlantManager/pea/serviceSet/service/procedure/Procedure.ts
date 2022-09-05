@@ -68,7 +68,9 @@ export class Procedure extends (EventEmitter as new() => ProcedureEmitter) {
 	constructor(options: ProcedureModel, connectionHandler: ConnectionHandler) {
 		super();
 
-		const procedureId = parseInt(options?.attributes.find(a => a.name === 'ProcedureID')!.value);
+		const procedureIdAttribute = options?.attributes.find(a => a.name === 'ProcedureID');
+		if (!procedureIdAttribute) throw new Error('The procedure id attribute could not be resolved.');
+		const procedureId = parseInt(procedureIdAttribute.value, 10);
 
 		if (!Procedure.validProcedureId(procedureId)){
 			throw new Error(`The procedure id should be Int and greater than 0 - got ${procedureId}`);

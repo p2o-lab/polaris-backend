@@ -23,7 +23,6 @@
  * SOFTWARE.
  */
 
-import {EventEmitter} from 'events';
 import {
 	AttributeIds,
 	ClientMonitoredItemBase,
@@ -41,11 +40,10 @@ import {
 } from 'node-opcua';
 import {timeout} from 'promise-timeout';
 import {ClientMonitoredItemGroup} from 'node-opcua-client/source/client_monitored_item_group';
-import {Category} from 'typescript-logging';
 import {DataType} from 'node-opcua-client';
 import {IDProvider} from '../../../../_utils';
 import {CIData} from '@p2olab/pimad-interface';
-import {AdapterConnectOptions, OpcUaAdapterInfo, OpcUaAdapterOptions, OpcUaEndpointInfo, OpcUaEndpointOption, OpcUaUserCredentials} from '@p2olab/polaris-interface';
+import {OpcUaAdapterInfo, OpcUaAdapterOptions, OpcUaEndpointInfo, OpcUaEndpointOption, OpcUaUserCredentials} from '@p2olab/polaris-interface';
 import {ConnectionAdapter} from '../ConnectionAdapter';
 
 interface EndpointInfo {
@@ -549,7 +547,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 	private validEndPointUrl(endpointUrl: string): boolean {
 		if(endpointUrl.length === 0) return false;
 		const url = new URL(endpointUrl);
-		return parseInt(url.port) <= 65535;
+		return parseInt(url.port, 10) <= 65535;
 	}
 
 	public getConnectionAdapterInfo(): OpcUaAdapterInfo{

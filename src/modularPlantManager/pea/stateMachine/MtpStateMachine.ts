@@ -378,7 +378,7 @@ export class MtpStateMachine {
   public getCommandEnabled(): ControlEnable {
     const enabled: ControlEnable = new Map();
     if (this.stateMachineService && this.stateMachineService.initialized) {
-      for (const e in ServiceMtpCommandString) {
+      for (const e in Object.keys(ServiceMtpCommandString)) {
         enabled.set(
           e as ServiceMtpCommandString,
           this.stateMachineService.nextState(e as ServiceMtpCommandString).changed as boolean);
