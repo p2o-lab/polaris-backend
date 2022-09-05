@@ -25,10 +25,13 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ./TwoOperandCondition.puml
 
-class OrCondition
+class OrCondition{
 
-OrCondition *- OrConditionSpec
-OrConditionSpec *- OrConditionJson
+    + OrCondition((options: OrConditionOptions, peas: PEA[])
+    + listen(): Condition
+}
+
 
 @enduml

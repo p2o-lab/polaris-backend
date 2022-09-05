@@ -25,20 +25,22 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include Service.puml
+
 
 abstract class BaseService{
-    + _name!: string
-    + _lastStatusChange: Date = new Date()
-    + _selfCompleting = false
+    + //readonly// id = IDProvider.generateIdentifier();
 
     + get qualifiedName(): string
     + abstract get state(): ServiceState
-    + abstract get commandEnable(): CommandEnableInterface
+    + abstract get commandEnable(): CommandEnableInfo
+    # _name!: string
     + get name(): string
+    # _lastStatusChange: Date = new Date()
     + get lastStatusChange(): Date
-    + set selfCompleting(value: boolean)
-    + abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEAController[]): Promise<void>
+    # _selfCompleting = false
+    # set selfCompleting(value: boolean)
+    + abstract json(): BaseServiceInterface
+    + abstract setParameters(parameters: Array<Parameter | ParameterOptions>, peaSet?: PEA[]): Promise<void>
     + isCommandExecutable(command: ServiceCommand): boolean
     + async executeCommand(command: ServiceCommand): Promise<void>
     + waitForStateChange(expectedState: string): Promise<void>
@@ -56,4 +58,5 @@ abstract class BaseService{
 }
 
 BaseService <|-- Service
+BaseService <|-- POLService
 @enduml

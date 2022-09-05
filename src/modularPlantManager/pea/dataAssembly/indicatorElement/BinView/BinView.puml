@@ -27,24 +27,18 @@
 'https://plantuml.com/class-diagram
 !include ../IndicatorElement.puml
 
-interface BinViewRuntime{
-    + V: DataItem<boolean>;
-    + VState0: DataItem<string>;
-    + VState1: DataItem<string>;
-}
 
 class BinView{
-    + readonly dataItems!: BinViewRuntime
+    + readonly dataItems!: BinViewDataItems
 
     + BinView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
+    # setDefaultReadDataItem()
 
 }
 
-BinView *- BinViewSpec
-BinViewSpec ..> BinViewMockup : <<use>>
-BinView *- BinViewMockup
-BinView *- "1" BinViewRuntime
+
+BinView *- "1" BinViewDataItems
 BinView <|-- BinMon
 
 @enduml

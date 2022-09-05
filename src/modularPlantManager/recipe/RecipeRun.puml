@@ -27,7 +27,32 @@
 'https://plantuml.com/class-diagram
 !include Recipe.puml
 
-class RecipeRun
+class RecipeRun{
+
+    + //readonly// id: string
+    + //readonly// recipe: Recipe
+    + serviceLog: ServiceLogEntry[]
+    + variableLog: VariableChange[]
+
+    + RecipeRun(recipe: Recipe)
+    - _startTime!: Date
+    + get startTime(): Date
+    - _endTime!: Date
+    + endTime(): Date
+    - _status: RecipeState
+    + status(): RecipeState
+    + json(): RecipeRunInterface
+    + //async// start(): Promise<Recipe>
+    + //async// stop(): Promise<void>
+    - boundOnCompleted : void
+    - boundOnStarted : void
+    - boundOnChanged : void
+    - removeRecipeListeners(): void
+    - onCompleted(): void
+    - onStarted(): void
+    - onChanged(): void
+
+}
 
 RecipeRun --> Recipe
 

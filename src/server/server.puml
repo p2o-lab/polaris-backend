@@ -22,38 +22,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
 
-interface PetrinetOptions{
+class Server{
+    + readonly app: express.Application
+    + wss?: WebSocket.Server
+    - httpServer?: http.Server
+    - interval?: NodeJS.Timeout
 
-    states: PetrinetStateOptions[]
-    transitions: PetrinetTransitionOptions[]
-    initialTransition: string
-
-}
-
-class Petrinet{
-
-    + //readonly// options: PetrinetOptions
-    + //readonly// states: PetrinetState[]
-    + //readonly// transitions: PetrinetTransition[]
-    + //readonly// initialTransition?: PetrinetTransition
-    + //readonly// activeStates: PetrinetState[]
-
-    + Petrinet(options: PetrinetOptions, peas: PEA[])
-    + //async// run(): Promise<void>
-    - listenToTransition(transition: PetrinetTransition): void
-    - activateState(state: PetrinetState): void
-    - useTransition(currentTransition: PetrinetTransition): void
+    + Server(manager: ModularPlantManager, peaProvider: PEAProvider)
+    + startHttpServer(port: number | string | boolean): void
+    + initSocketServer(): void
+    - notifyClients(notification: BackendNotification): void
+    - async stop(): Promise<void>
 
 }
-
-Petrinet *- "1" PetrinetOptions
-Petrinet *- "2" PetrinetState
-Petrinet *- "2" PetrinetTransition
-
-EventEmitter <|-- Petrinet
-
 @enduml

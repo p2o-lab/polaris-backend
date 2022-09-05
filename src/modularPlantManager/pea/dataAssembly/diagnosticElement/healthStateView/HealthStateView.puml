@@ -30,15 +30,13 @@
 interface HealthStateViewRuntime
 
 class HealthStateView{
-	+ readonly dataItems!: HealthStateViewRuntime;
+	+ readonly dataItems!: HealthStateViewDataItems;
 
 	+ HealthStateView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
 	# initializeBaseFunctions()
 
 }
 
-HealthStateViewRuntime <-- HealthStateView
-HealthStateViewSpec --> HealthStateView : <<uses>>
-HealthStateViewSpec --> HealthStateViewMockup : <<uses>>
+HealthStateViewDataItems <-- HealthStateView
 
 @enduml

@@ -22,38 +22,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
 
-interface PetrinetOptions{
+class PEAProvider{
 
-    states: PetrinetStateOptions[]
-    transitions: PetrinetTransitionOptions[]
-    initialTransition: string
-
+    + //async// getAllPEAsFromPiMAd(): Promise<PEAModel[]>
+    + //async// getPEAFromPiMAd(peaId: string): Promise<PEAModel>
 }
-
-class Petrinet{
-
-    + //readonly// options: PetrinetOptions
-    + //readonly// states: PetrinetState[]
-    + //readonly// transitions: PetrinetTransition[]
-    + //readonly// initialTransition?: PetrinetTransition
-    + //readonly// activeStates: PetrinetState[]
-
-    + Petrinet(options: PetrinetOptions, peas: PEA[])
-    + //async// run(): Promise<void>
-    - listenToTransition(transition: PetrinetTransition): void
-    - activateState(state: PetrinetState): void
-    - useTransition(currentTransition: PetrinetTransition): void
-
-}
-
-Petrinet *- "1" PetrinetOptions
-Petrinet *- "2" PetrinetState
-Petrinet *- "2" PetrinetTransition
-
-EventEmitter <|-- Petrinet
 
 @enduml

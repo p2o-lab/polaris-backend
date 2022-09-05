@@ -25,7 +25,25 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../POLService.puml
 
-class FunctionGenerator
+class FunctionGenerator{
+
+    + //static// type = 'functionGenerator'
+    + startTime!: Date
+    - timerUpdateId!: Timeout
+    - expression!: Expression
+
+    + FunctionGenerator(name: string)
+    + set output(value: number)
+    + //async// onStarting(): Promise<void>
+    + //async// onPausing(): Promise<void>
+    + //async// onResuming(): Promise<void>
+    + //async// onCompleting(): Promise<void>
+    + //async// onAborting(): Promise<void>
+    + //async// onStopping(): Promise<void>
+    # initParameter(): void
+
+}
 
 @enduml

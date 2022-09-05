@@ -28,7 +28,7 @@
 !include ../DataAssembly.puml
 
 class ActiveElement{
-    + dataItems : ActiveElementRuntime;
+    + dataItems : ActiveElementDataItems;
     + osLevel : OSLevel;
     + wqc : WQC;
 
@@ -41,11 +41,9 @@ ActiveElement <|-- PIDCtrl
 ActiveElement <|-- Vlv
 ActiveElement <|-- Drv
 
-ActiveElement *- ActiveElementSpec
-ActiveElementSpec ..> ActiveElementMockup : <<use>>
-ActiveElement *- ActiveElementMockup
 
-ActiveElement *- ActiveElementRuntime
+
+ActiveElement *- ActiveElementDataItems
 ActiveElement *- OSLevel
 ActiveElement *- WQC
 

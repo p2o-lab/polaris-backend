@@ -27,26 +27,14 @@
 'https://plantuml.com/class-diagram
 !include ../ServParam.puml
 
-interface BinServParamRuntime{
-    + VExt: DataItem<string>
-	+ VOp: DataItem<string>
-	+ VInt: DataItem<string>
-	+ VReq: DataItem<string>
-	+ VOut: DataItem<string>
-	+ VFbk: DataItem<string>
-}
-
 class StringServParam{
-  + readonly dataItems!: BinServParamRuntime
+  + readonly dataItems!: StringServParamDataItems
 
   + StringServParam(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
   # initializeBaseFunctions()
 
 }
-StringServParam *- StringServParamSpec
-StringServParamSpec ..> StringServParamMockup : <<use>>
-StringServParam *- StringServParamMockup
 
-StringServParam *- StringServParamRuntime
+StringServParam *- StringServParamDataItems
 
 @enduml

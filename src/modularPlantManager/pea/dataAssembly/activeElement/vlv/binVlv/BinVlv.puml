@@ -27,20 +27,14 @@
 'https://plantuml.com/class-diagram
 !include ../Vlv.puml
 
-interface BinVlvRuntime{
-    + Ctrl: DataItem<boolean>;
-}
 class BinVlv{
-	+ readonly dataItems!: BinVlvRuntime;
+	+ readonly dataItems!: BinVlvDataItems;
 
 	+ BinVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
 	# initializeBaseFunctions()
 }
 
-BinVlv *- BinVlvSpec
-BinVlvSpec ..> BinVlvMockup : <<use>>
-BinVlv *- BinVlvMockup
-BinVlv *- BinVlvRuntime
+BinVlv *- BinVlvDataItems
 
 BinVlv <|-- MonBinVlv
 

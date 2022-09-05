@@ -25,14 +25,9 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ./dataAssembly/DataAssembly.puml
-!include ./serviceSet/service/service.puml
-!include ./connection/Connection.puml
-
-
 
 class PEA{
-    + //readonly// options: PEAOptions
+    + //readonly// options: PEAModel
     + //readonly// id: string
     + //readonly// pimadIdentifier: string
     + //readonly// name: string;
@@ -40,41 +35,42 @@ class PEA{
     + services: Service[]
     + variables: DataAssembly[]
     + protected: boolean
-    + connection: OpcUaConnection
+    + connectionHandler: ConnectionHandler
 
-    - //readonly// description: string
-    - //readonly// hmiUrl: string
     - //readonly// logger: Category
 
-    + PEA(options: PEAOptions, protectedPEA = false)
-    + updateConnection(options: ServerSettingsOptions): void
-    + getService(serviceName: string): Service
+    + PEA(options: PEAModel)
+    + async updateConnectionAdapter(adapterId: string, options: OpcUaEndpointSetting)
+    + isProtected(): boolean
+    + set protection(value: boolean)
+    + findServiceId(serviceName: string): string | undefined
+    + findService(serviceId: string): Service | undefined
     + getServiceStates(): ServiceInterface[]
-    + getPossibleStateChange(): any
-    + overwatchRTCondition(): any
-    + //async// connectAndSubscribe(): Promise<void>
-    + //async// disconnectAndSubscribe(): Promise<void>
+    + async initializeConnection(adapterId?: string): Promise<void>
+    + async connect(adapterId?: string, options?: OpcUaEndpointSetting): Promise<void>
+    - async subscribe(): Promise<void>
+    + async disconnect(): Promise<void>
+    - async unsubscribe(): Promise<void>
     + json(): PEAInterface
     + isConnected(): boolean
+    + getCurrentConnectionSettings(): ConnectionHandlerInfo
     + listenToDataAssembly(dataAssemblyName: string, variableName: string): DataItemEmitter
-    + abort(): Promise<void[]>
-    + pause(): Promise<void[]>
-    + resume(): Promise<void[]>
-    + hold(): Promise<void[]>
-    + stop(): Promise<void[]>
-    + reset(): Promise<void[]>
-
-    - subscribeToAllVariables(): Promise<DataAssembly[]>
-    - unsubscribeFromAllVariables(): void
-    - subscribeToAllServices(): Promise<StrictEventEmitter<EventEmitter, ServiceEvents, ServiceEvents, "addEventListener" | "removeEventListener", "on" | "addListener" | "removeListener" | "once" | "emit">[]>
-    - unsubscribeFromAllServices(): void
-
-
+    + async pauseAllServices(): Promise<void[]>
+    + async resumeAllServices(): Promise<void[]>
+    + async holdAllServices(): Promise<void[]>
+    + async unholdAllServices(): Promise<void[]>
+    + abortAllServices(): Promise<void[]>
+    + async stopAllServices(): Promise<void[]>
+    + resetAllServices(): Promise<void[]>
+    - subscribeToAllDataAssemblies(): Promise<Awaited<void>[]>
+    - unsubscribeFromAllDataAssemblies(): void
+    - subscribeToAllServices(): void-  unsubscribeFromAllServices(): void
+    + getDataAssemblyJson(): DataAssemblyOptions[]
 }
 
 PEA *-- "0..*" DataAssembly
 PEA *-- "0..*" Service
-PEA *-- "1" Connection
+PEA *-- "1" connectionHandler
 
 PEAEmitter <|-- PEA
 

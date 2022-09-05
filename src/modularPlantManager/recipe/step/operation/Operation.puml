@@ -25,13 +25,32 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include Parameter.puml
+'!include Parameter.puml
 
 
-class Operation
+class Operation{
 
-Operation --> Parameter
-Operation --> POLService
-Operation --> Service
+    - //static// MAX_RETRIES = 10
+    - //static// RETRY_DELAY = 500
+    + pea: PEA | undefined
+    + service: BaseService
+    + procedure!: Procedure | undefined
+    + command!: ServiceCommand
+    + parameterOptions: ParameterOptions[]
+    - state!: 'executing' | 'completed' | 'aborted'
+
+    + Operation(options: OperationOptions, peas: PEA[])
+    + async execute(): Promise<void>
+    + stop(): void
+    + json(): OperationInterface
+
+}
+
+'Operation --> Parameter
+Operation *-- BaseService
+Operation *-- Procedure
+Operation *-- PEA
+
+
 
 @enduml

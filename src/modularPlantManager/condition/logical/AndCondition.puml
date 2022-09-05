@@ -26,10 +26,13 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ./TwoOperandCondition.puml
 
-class AndCondition
+class AndCondition{
 
-AndCondition *- AndConditionSpec
-AndConditionSpec *- AndConditionJson
+    + AndCondition(options: AndConditionOptions, peas: PEA[])
+    + listen(): Condition
+}
+
 
 @enduml

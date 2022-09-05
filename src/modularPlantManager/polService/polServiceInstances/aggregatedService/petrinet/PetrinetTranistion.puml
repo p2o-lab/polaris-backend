@@ -26,6 +26,28 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class PetrinetTransition
+interface PetrinetTransitionOptions{
+
+    id: string;
+    condition?: ConditionOptions;
+    nextStates: string[];
+
+}
+
+class PetrinetTransition{
+
+    + //readonly// id: string
+    + //readonly// options: PetrinetTransitionOptions
+    + nextStates: PetrinetState[]
+    + priorStates: PetrinetState[]
+    + //readonly// condition!: Condition
+
+    + PetrinetTransition(options: PetrinetTransitionOptions, peaSet: PEA[])
+}
+
+PetrinetTransition *- PetrinetTransitionOptions
+PetrinetTransition *-"2" PetrinetState
+PetrinetTransition *- Condition
+
 
 @enduml

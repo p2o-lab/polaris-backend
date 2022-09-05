@@ -28,15 +28,9 @@
 !include ../BinView.puml
 !include ../../../baseFunction/osLevel/OSLevel.puml
 
-interface BinMonRuntime{
-    + VFlutTi: DataItem<number>;
-    + VFlutEn: DataItem<boolean>;
-    + VFlutCnt: DataItem<number>;
-    + VFlutAct: DataItem<boolean>;
-}
 
 class BinMon{
-	+ readonly dataItems!: BinMonRuntime;
+	+ readonly dataItems!: BinMonDataItems;
 	+ osLevel: OSLevel;
 
 	+ BinMon(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
@@ -44,10 +38,7 @@ class BinMon{
 }
 
 
-BinMon *- BinMonSpec
-BinMonSpec ..> BinMonMockup : <<use>>
-BinMon *- BinMonMockup
-BinMon *- "1" BinMonRuntime
+BinMon *- "1" BinMonDataItems
 BinMon *- "1" OSLevel
 
 

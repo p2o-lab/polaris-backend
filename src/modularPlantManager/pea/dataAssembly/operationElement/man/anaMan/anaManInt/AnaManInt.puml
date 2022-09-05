@@ -29,12 +29,8 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 
-interface AnaManIntRuntime{
-	+ VInt: DataItem<number>;
-}
-
 class AnaManInt{
-    + readonly dataItems!: AnaManIntRuntime
+    + readonly dataItems!: AnaManIntDataItems
     + sourceMode: SourceModeController
     + wqc: WQC
 
@@ -42,11 +38,7 @@ class AnaManInt{
     # initializeBaseFunctions()
 }
 
-AnaManInt *- AnaManIntSpec
-AnaManIntSpec ..> AnaManIntMockup : <<use>>
-AnaManInt *- AnaManIntMockup
-
-AnaManInt *- AnaManIntRuntime
+AnaManInt *- AnaManIntDataItems
 AnaManInt *- WQC
 AnaManInt *- SourceModeController
 

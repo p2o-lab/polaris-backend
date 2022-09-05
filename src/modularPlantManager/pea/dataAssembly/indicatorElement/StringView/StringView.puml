@@ -31,17 +31,14 @@ interface StringViewRuntime{
 }
 
 class StringView{
-    + readonly dataItems!: StringViewRuntime
+    + readonly dataItems!: StringViewDataItems
 
     + StringView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
     + get Text(): string | undefined
 
 }
-StringView *- StringViewSpec
-StringViewSpec ..> StringViewMockup : <<use>>
-StringView *- StringViewMockup
 
-StringView *- "1" StringViewRuntime
+StringView *- "1" StringViewDataItems
 
 @enduml

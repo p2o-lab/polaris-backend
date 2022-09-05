@@ -22,34 +22,37 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
-!include step/Step.puml
 
-class Recipe{
+class MtpStateMachine{
 
-    + //readonly// id: string
+    + stateMachineService: Interpreter<UserContext, ServiceStateSchema, InternalMtpCommand> | undefined
+    + stateMachine: StateMachine<UserContext, ServiceStateSchema, InternalMtpCommand>
     + //readonly// name: string
-    + //readonly// options: RecipeOptions
-    + //readonly// protected: boolean
-    + peaSet: Set<PEA> = new Set<PEA>()
-    + //readonly// initialStep: Step | undefined
-    + //readonly// steps: Step[]
-    + currentStep: Step | undefined
-    + status: RecipeState
-    + lastChange: Date
-    - stepListener: EventEmitter | undefined
+    - varProcedureCur = 0
+    - varProcedureReq = 1
 
-    + Recipe(options: RecipeOptions, peas: PEA[], protectedRecipe = false)
-    + json(): RecipeInterface
-    + connectPEAs(): Promise<void[] | void>
-    + //async// start(): Promise<Recipe>
-    + pause(): void
-    + //async// stop(): Promise<void>
-    - executeStep(): void
+    + MtpStateMachine(name: string, userDefinedGuards: UserDefinedGuard, userDefinedActions: UserDefinedActions)
+    + static readonly level1Config: MachineConfig<UserContext, any, InternalMtpCommand>
+    + static readonly level2Config: MachineConfig<UserContext, any, InternalMtpCommand>
+    + static readonly level3Config: MachineConfig<UserContext, any, InternalMtpCommand>
+    + static readonly level4Config: MachineConfig<UserContext, any, InternalMtpCommand>
+    + readonly defaultOptions: UserDefinedServiceConfiguration
+    + staticOptions: StaticServiceConfiguration
+    + reconfigure(updatedGuards: Partial<UserDefinedGuard>, updatedActions: Partial<UserDefinedActions>): void
+    + setProcedureReq(procedureReq: number): void
+    - updateProcedureCur(): void
+    - resetProcedureCur(): void
+    + getProcedureReq(): number
+    + getProcedureCur(): number
+    + start(): void
+    + getCommandEnabled(): ControlEnable
+    + triggerEvent(event: ServiceMtpCommand): boolean
+    + goToNextState(): void
+    + getState(): ServiceStateString
 
 }
 
-Recipe "1" *-- "*" Step: contains >
 @enduml

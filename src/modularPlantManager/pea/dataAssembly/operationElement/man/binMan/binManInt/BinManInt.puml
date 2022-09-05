@@ -29,12 +29,9 @@
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
 
-interface BinManIntRuntime{
-    + VInt: DataItem<boolean>;
-}
 
 class BinManInt{
-    + dataItems!: BinManIntRuntime
+    + dataItems!: BinManIntDataItems
     + sourceMode: SourceModeController
     + wqc: WQC
 
@@ -42,11 +39,7 @@ class BinManInt{
     # initializeBaseFunctions()
 }
 
-BinManInt *- BinManIntSpec
-BinManIntSpec ..> BinManIntMockup : <<use>>
-BinManInt *- BinManIntMockup
-
-BinManInt *- BinManIntRuntime
+BinManInt *- BinManIntDataItems
 BinManInt *- WQC
 BinManInt *- SourceModeController
 

@@ -28,7 +28,7 @@
 !include ../DataAssembly.puml
 
 class InputElement{
-    + readonly dataItems!: InputElementRuntime
+    + readonly dataItems!: InputElementDataItems
     + parameterRequest: ParameterRequest | undefined
     + requestedValue = ''
     + wqc!: WQC
@@ -40,12 +40,8 @@ class InputElement{
     + toJson(): ParameterInterface
 }
 
-InputElement *- InputElementSpec
-InputElementSpec ..> InputElementMockup : <<use>>
-InputElement *- InputElementMockup
-
 InputElement *- ParameterRequest
-InputElement *- InputElementRuntime
+InputElement *- InputElementDataItems
 InputElement *- WQC
 
 InputElement <|-- AnaProcessValueIn

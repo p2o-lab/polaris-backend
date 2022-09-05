@@ -22,38 +22,36 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
+
 @startuml
 'https://plantuml.com/class-diagram
 
-class Connection{
-	+ //readonly// endpoint: string
-	+ //readonly// id: string
-	+ //readonly// username: string | undefined
-    + //readonly// password: string | undefined
-	- session: ClientSession | undefined
-	- client: OPCUAClient | undefined
-	- subscription: ClientSubscription | undefined
-	- namespaceArray!: string[]
-	- //readonly// items: Map<string, string>
-	- //readonly// logger: Category
+class ConnectionHandler{
 
-	+ Connection(targetId: string, endpoint: string, username?: string, password?: string) {
-	+ //async// connect(): Promise<void>
-    + //async// disconnect(): Promise<void>
-    + isConnected(): boolean
-    + //async// readNode(nodeId: string, namespaceUri: string): Promise<DataValue | undefined>
-    + addNode(nodeId: string, namespaceUri: string): string
-    + //async// startListening(samplingInterval=100): Promise<EventEmitter>
-    + //async// writeNode(nodeId: string, namespaceUri: string, value: number | string | boolean, dataType: string): Promise<void>
-    + monitoredItemSize(): number
-    - resolveNodeId(nodeId: string, namespaceUri: string): NodeId
-    - //async// readNameSpaceArray(): Promise<any>
-    - //async// createAndConnectClient(): Promise<OPCUAClient>
-    - //async// createSession()
-    - //async// createSubscription()
+    + //readonly// id: string
+    + connectionEstablished
+    - _connectionAdapters: OpcUaAdapter[]
+    - monitoredDataItems: Map<string, CIData>
+
+    + ConnectionHandler()
+    + addConnectionAdapter(endpoint: Endpoint): string
+    + //get// connectionAdapterInfo(): ConnectionHandlerInfo
+    + //async// connect(adapterId?: string, endpointConfig?: OpcUaEndpointSetting): Promise<void>
+    + //async// disconnect(adapterId?:string): Promise<void>
+    + connected(): boolean
+    + //async// readDataItemValue(ciData: CIData):  Promise<DataValue | undefined>
+    + //async// writeDataItemValue(ciData: CIData, value: number | string | boolean): Promise<void>
+    + addDataItemToMonitoring(ciData: CIData, identifier?: string): string
+    + removeDataItemFromMonitoring(monitoredDataItemIdentifier: string): void
+    + monitoredDataItemsCount(): number
+    + clearMonitoredDataItems(): void
+    + //async// initializeAdapter(adapterId?: string, options?: OpcUaConnectionAdapterOptions): Promise<void>
+    + //async// updateConnectionAdapter(adapterId: string, options: OpcUaEndpointSetting)
+
 }
-ConnectionEmitter <|-- Connection
+
+ConnectionHandler *-- OpcUaAdapter
+ConnectionEmitter <|-- ConnectionHandler
 
 @enduml
 

@@ -25,10 +25,14 @@
 
 @startuml
 'https://plantuml.com/class-diagram
+!include ../Condition.puml
 
-class TrueCondition
+class TrueCondition{
 
-TrueCondition *- TrueConditionSpec
-TrueConditionSpec *- TrueConditionJson
+    + TrueCondition(options: ConditionOptions)
+    + listen(): Condition
+    + getUsedPEAs(): Set<PEA>
+
+}
 
 @enduml

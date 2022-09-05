@@ -32,18 +32,15 @@
 interface AnaMonRuntime
 
 class AnaMon{
-    + dataItems!: AnaMonRuntime
-    + limitMonitoring: LimitMonitoring
+    + dataItems!: AnaMonDataItems
+    + limitMonitoring: LimitMonitoring<number>
     + osLevel: OSLevel
 
     + AnaMon(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-AnaMon --> AnaMonRuntime
+AnaMon --> AnaMonDataItems
 
-AnaMonSpec --> AnaMon : <<uses>>
-AnaMonSpec --> AnaMonMockup : <<uses>>
-AnaMon -- AnaMonMockup
 AnaMon *-- "1" LimitMonitoring
 AnaMon *-- "1" OSLevel
 

@@ -26,18 +26,13 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface OSLevelRuntime{
-    + OSLevel: DataItem<number>
-}
-
 class OSLevel{
-    - readonly dataItems: OSLevelRuntime
-    + OSLevel(requiredDataItems: Required<OSLevelRuntime>)
+    - readonly dataItems: OSLevelDataItems
+    + OSLevel(requiredDataItems: Required<OSLevelDataItems>)
     + get osLevel(): number
     + set osLevel(value: number)
 }
 
-OSLevelRuntime <-- OSLevel
-OSLevelSpec --> OSLevel : <<uses>>
-OSLevelSpec --> OSLevelMockup : <<uses>>
+OSLevelDataItems <-- OSLevel
+
 @enduml

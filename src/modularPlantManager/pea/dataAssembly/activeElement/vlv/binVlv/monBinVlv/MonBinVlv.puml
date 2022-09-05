@@ -28,17 +28,14 @@
 !include ../BinVlv.puml
 
 class MonBinVlv{
-  + readonly dataItems!: MonBinVlvRuntime
+  + readonly dataItems!: MonBinVlvDataItems
   + feedbackMonitoring: FeedbackMonitoring
 
   + MonBinVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
   # initializeBaseFunctions()
 }
 
-MonBinVlv *- MonBinVlvSpec
-MonBinVlvSpec ..> MonBinVlvMockup : <<use>>
-MonBinVlv *- MonBinVlvMockup
-MonBinVlv *- MonBinVlvRuntime
+MonBinVlv *- MonBinVlvDataItems
 MonBinVlv *- FeedbackMonitoring
 
 @enduml

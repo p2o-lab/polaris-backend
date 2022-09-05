@@ -26,6 +26,31 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class PetrinetState
+interface PetrinetStateOptions{
+
+    id: string;
+    operations: OperationOptions[];
+    nextTransitions: string[];
+
+}
+
+class PetrinetState{
+
+    + //readonly// id: string
+    + //readonly// options: PetrinetStateOptions
+    + //nextTransitions//: PetrinetTransition[]
+    + operationCompleted: boolean
+    - operations: Operation[]
+
+    + PetrinetState(options: PetrinetStateOptions, peas: PEA[])
+    + //async// execute(): Promise<void>
+
+}
+
+PetrinetState *- PetrinetStateOptions
+PetrinetState *- PetrinetTransition
+PetrinetState *- Operation
+
+
 
 @enduml

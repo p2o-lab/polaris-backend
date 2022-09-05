@@ -26,7 +26,28 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class Procedure
+class Procedure{
+
+    + //readonly// id = IDProvider.generateIdentifier();
+    + //readonly// procedureId: number
+    + //readonly// name: string
+    + //readonly// selfCompleting: boolean
+    + //readonly// processValuesIn: InputElement[]
+    + //readonly// processValuesOut: IndicatorElement[]
+    + //readonly// reportParameters: IndicatorElement[]
+    + //readonly// parameters: ServParam[]
+    + //readonly// logger: Category
+
+    + Procedure(options: ProcedureModel, connectionHandler: ConnectionHandler)
+    + //async// subscribe(): Promise<Procedure>
+    + unsubscribe(): void
+    + toJson(): ProcedureInterface
+    + getDataAssemblyJson(): DataAssemblyOptions[]
+    - //static// validProcedureId(valueToCheck: number): boolean
+
+
+
+}
 
 Procedure *-- "0..*" ProcedureParameter
 Procedure *-- "0..*" ProcessValueIn

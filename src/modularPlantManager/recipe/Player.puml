@@ -27,7 +27,31 @@
 'https://plantuml.com/class-diagram
 !include Recipe.puml
 
-class Player
+class Player{
+
+    + //readonly// recipeRuns: RecipeRun[]
+    + currentRecipeRun: RecipeRun | undefined
+    + repeat: Repeat = Repeat.none
+
+    + Player()
+    - _currentItem = -1
+    + get currentItem(): number
+    - _status: RecipeState
+    + get status(): RecipeState
+    - private _playlist: Recipe[]
+    + get playlist(): Recipe[]
+    + enqueue(recipe: Recipe): Player
+    + getCurrentRecipe(): Recipe
+    + remove(index: number): Player
+    + json(): PlayerInterface
+    + //async// start(): Promise<void>
+    + reset(): void
+    + //async// pause(): Promise<void>
+    + //async// stop(): Promise<void>
+    + forceTransition(stepName: string, nextStepName: string): void
+    - //async// runCurrentRecipe(): Promise<void>
+
+}
 
 Player o-- Recipe: playlist
 

@@ -26,18 +26,11 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface ScaleSettingsRuntime{
-	+ VSclMin: DataItem<number>
-	+ VSclMax: DataItem<number>
-}
-
 class ScaleSettings{
-     + readonly dataItems: ScaleSettingsRuntime
-     + ScaleSettings(requiredDataItems: Required<ScaleSettingsRuntime>)
+     + readonly dataItems: VScaleSettingDataItems<T>
+     + ScaleSettings(requiredDataItems: Required<VScaleSettingDataItems<T>>)
 }
 
-ScaleSettingsRuntime <-- ScaleSettings
-ScaleSettingsSpec --> ScaleSettings : <<uses>>
-ScaleSettingsSpec --> ScaleSettingsMockup : <<uses>>
+VScaleSettingDataItems <-- ScaleSettings
 
 @enduml

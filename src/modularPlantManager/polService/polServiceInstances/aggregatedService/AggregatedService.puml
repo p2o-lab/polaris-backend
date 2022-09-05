@@ -25,7 +25,34 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../../POLService.puml
 
-class AggregatedService
+class AggregatedService{
+
+ + //static// type = 'aggregatedService'
+ + //readonly// peas: Set<PEA>
+ + //readonly// services: Service | POLService
+ + _lastStatusChange: Date
+ - //readonly// commandEnableExpression: CommandEnableOptions | undefined
+ - //readonly// options: AggregatedServiceOptions
+ - //readonly// stateMachines: Map<string, Petrinet>
+ - logger: Category
+
+ + AggregatedService(options: AggregatedServiceOptions, peas: PEA[], virtualServices?: POLService[])
+ # initParameter(): void
+ # onStarting(): Promise<void>
+ # //async// onExecute(): Promise<void>
+ # //async// onPausing(): Promise<void>
+ # //async// onCompleting(): Promise<void>
+ # //async// onResuming(): Promise<void>
+ # //async// onAborting(): Promise<void>
+ # //async// onStopping(): Promise<void>
+ # //async// onUnholding(): Promise<void>
+ # //async// onHolding(): Promise<void>
+ # //async// onRestarting(): Promise<void>
+ # //async// onResetting(): Promise<void>
+ - //async// runPetriNetOrDefault(petrinetName: string, command?: (service: BaseService) => Promise<void>, stateName?: string): Promise<void>
+
+}
 
 @enduml

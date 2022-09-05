@@ -26,17 +26,12 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface UnitSettingsRuntime{
-    + VUnit: DataItem<number>
-}
-
 class UnitSettings{
-    + readonly dataItems: UnitSettingsRuntime
-    + UnitSettings(requiredDataItems: Required<UnitSettingsRuntime>)
+    + readonly dataItems: VUnitDataItems
+    + UnitSettings(requiredDataItems: Required<VUnitDataItems>)
     + Unit(): string
 }
 
-UnitSettingsRuntime <-- UnitSettings
-UnitSpec --> UnitSettings : <<uses>>
-UnitSpec --> UnitMockup : <<uses>>
+VUnitDataItems <-- UnitSettings
+
 @enduml

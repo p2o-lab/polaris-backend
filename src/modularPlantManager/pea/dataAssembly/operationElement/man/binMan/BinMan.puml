@@ -27,27 +27,14 @@
 'https://plantuml.com/class-diagram
 !include ../../OperationElement.puml
 
-interface BinManRuntime{
-	+ VMan: DataItem<boolean>
-	+ VRbk: DataItem<boolean>
-	+ VFbk: DataItem<boolean>
-	+ VOut: DataItem<boolean>
-	+ VState0: DataItem<string>
-	+ VState1: DataItem<string>
-
-}
-
 class BinMan{
-    + dataItems!: BinManRuntime
+    + dataItems!: BinManDataItems
 
     + BinMan (options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
 
-BinMan *- BinManSpec
-BinManSpec ..> BinManMockup : <<use>>
-BinMan *- BinManMockup
-BinMan *- BinManRuntime
+BinMan *- BinManDataItems
 
 BinMan <|-- BinManInt
 @enduml

@@ -29,23 +29,16 @@
 !include ../../../baseFunction/scaleSettings/ScaleSettings.puml
 !include ../../../baseFunction/unitSettings/UnitSettings.puml
 
-interface DIntProcessValueInRuntime{
-    + VExt: DataItem<number>;
-}
-
 class DIntProcessValueIn{
-    + readonly dataItems!: DIntProcessValueInRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: DIntProcessValueInDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
 
     + DIntProcessValueIn(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-DIntProcessValueIn *- DIntProcessValueInSpec
-DIntProcessValueInSpec ..> DIntProcessValueInMockup : <<use>>
-DIntProcessValueIn *- DIntProcessValueInMockup
 
-DIntProcessValueIn *- DIntProcessValueInRuntime
+DIntProcessValueIn *- DIntProcessValueInDataItems
 DIntProcessValueIn *- ScaleSettings
 DIntProcessValueIn *- UnitSettings
 @enduml

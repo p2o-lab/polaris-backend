@@ -28,16 +28,14 @@
 !include ../BinDrv.puml
 
 class MonBinDrv{
-   + readonly dataItems!: MonBinDrvRuntime
+   + readonly dataItems!: MonBinDrvDataItems
    + feedbackMonitoring: FeedbackMonitoring
 
    + MonBinDrv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
    # initializeBaseFunctions()
 }
-MonBinDrv *- MonBinDrvSpec
-MonBinDrvSpec ..> MonBinDrvMockup : <<use>>
-MonBinDrv *- MonBinDrvMockup
-MonBinDrv *- "1" MonBinDrvRuntime
+
+MonBinDrv *- "1" MonBinDrvDataItems
 MonBinDrv *- "1" FeedbackMonitoring
 
 

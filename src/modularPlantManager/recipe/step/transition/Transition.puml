@@ -26,7 +26,16 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class Transition
+class Transition{
 
-Transition --> Condition
+    + nextStep: Step | undefined
+    + //readonly// nextStepName: string
+    + //readonly// condition: Condition
+
+    + Transition(options: TransitionOptions, peas: PEA[])
+    + getUsedPEAs(): Set<PEA>
+    + json(): TransitionInterface
+}
+
+Transition *-- Condition
 @enduml

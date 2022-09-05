@@ -28,7 +28,7 @@
 !include ../activeElement.puml
 
 class Drv{
-    + readonly dataItems!: DrvRuntime
+    + readonly dataItems!: ActiveElementVlvDrvCommonDataItems
     + reset: Reset
     + interlock: Interlock
     + opMode: OpMode
@@ -37,11 +37,7 @@ class Drv{
     # initializeBaseFunctions()
 }
 
-Drv *- DrvSpec
-DrvSpec ..> DrvMockup : <<use>>
-Drv *- DrvMockup
-
-Drv *- DrvRuntime
+Drv *- ActiveElementVlvDrvCommonDataItems
 Drv *- Reset
 Drv *- Interlock
 Drv *- OpMode

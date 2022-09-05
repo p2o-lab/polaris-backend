@@ -28,21 +28,17 @@
 !include ../IndicatorElement.puml
 
 class DIntView{
-    + readonly dataItems: AnaViewRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems: DIntViewDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
 
     + DIntView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-DIntView *- DIntViewSpec
-DIntViewSpec ..> DIntViewMockup : <<use>>
-DIntView *- DIntViewMockup
-
 
 DIntView <|-- DIntMon
 DIntView *-- "1" ScaleSettings
-DIntView *-- "1" AnaViewRuntime
+DIntView *-- "1" DIntViewDataItems
 DIntView *-- "1" UnitSettings
 
 @enduml

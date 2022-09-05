@@ -26,17 +26,11 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface ResetRuntime{
-    + ResetOp: DataItem<boolean>
-	+ ResetAut: DataItem<boolean>
-}
-
 class Reset{
-    + readonly dataItems!: ResetRuntime
-    + Reset(requiredDataItems: Required<ResetRuntime>)
+    + readonly dataItems!: ResetDataItems
+    + Reset(requiredDataItems: Required<ResetDataItems>)
 }
 
-ResetRuntime <-- Reset
-ResetSpec --> Reset : <<uses>>
-ResetSpec --> ResetMockup : <<uses>>
+ResetDataItems <-- Reset
+
 @enduml

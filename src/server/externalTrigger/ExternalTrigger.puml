@@ -26,6 +26,19 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-class ExternalTrigger
+class ExternalTrigger{
+
+    - //readonly// endpoint: string
+    - //readonly// nodeId: NodeId
+    - client: OPCUAClient
+    - session!: ClientSession
+    - //readonly// callback: () => void
+
+    + ExternalTrigger(endpoint: string, nodeId: string, callback: () => void)
+    + //async// getValue(): Promise<boolean>
+    + //async// startMonitoring(): Promise<void>
+    + //async// disconnect(): Promise<void>
+
+}
 
 @enduml

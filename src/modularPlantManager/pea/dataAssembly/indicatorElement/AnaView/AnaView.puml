@@ -35,20 +35,17 @@ interface AnaViewRuntime{
 }
 
 class AnaView{
-    + readonly dataItems!: AnaViewRuntime
-    + scaleSettings: ScaleSettings
+    + readonly dataItems!: AnaViewDataItems
+    + scaleSettings: ScaleSettings<number>
     + unitSettings: UnitSettings
 
     + AnaView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     # initializeBaseFunctions()
 }
-AnaView *- AnaViewSpec
-AnaViewSpec ..> AnaViewMockup : <<use>>
-AnaView *- AnaViewMockup
 
 AnaView <|-- AnaMon
 AnaView *-- "1" ScaleSettings
-AnaView *-- "1" AnaViewRuntime
+AnaView *-- "1" AnaViewDataItems
 AnaView *-- "1" UnitSettings
 
 @enduml

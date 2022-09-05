@@ -25,7 +25,12 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../ServiceRelation.puml
 
-class ServiceForce
+class ServiceForce{
+
+    + ServiceForce(options: ServiceRelationOptions, parentID: string)
+
+}
 
 @enduml

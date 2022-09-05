@@ -25,7 +25,11 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../ServiceRelation.puml
 
 class ServiceEnable
+{
+    + ServiceEnable(options: ServiceRelationOptions, parentID: string)
+}
 
 @enduml

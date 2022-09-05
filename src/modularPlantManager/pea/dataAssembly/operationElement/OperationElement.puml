@@ -29,7 +29,7 @@
 
 class OperationElement{
 
-    + dataItems!: OperationElementRuntime
+    + dataItems!: OperationElementDataItems
     + parameterRequest: ParameterRequest | undefined
     + requestedValue = ''
 
@@ -41,11 +41,7 @@ class OperationElement{
 
 }
 
-OperationElement *- OperationElementSpec
-OperationElementSpec ..> OperationElementMockup : <<use>>
-OperationElement *- OperationElementMockup
-
-OperationElement *- OperationElementRuntime
+OperationElement *- OperationElementDataItems
 OperationElement *- ParameterRequest
 
 OperationElement <|-- ServParam
