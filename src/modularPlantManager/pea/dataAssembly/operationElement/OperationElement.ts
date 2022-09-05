@@ -54,7 +54,7 @@ export class OperationElement extends DataAssembly {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {

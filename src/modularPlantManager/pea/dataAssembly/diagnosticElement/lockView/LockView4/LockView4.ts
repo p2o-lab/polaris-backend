@@ -41,7 +41,7 @@ export class LockView4 extends DiagnosticElement {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.Out;
 		this.defaultReadDataItemType = 'boolean';

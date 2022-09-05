@@ -46,7 +46,7 @@ export class PIDCtrl extends ActiveElement {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.PV;
 		this.defaultReadDataItemType = 'number';

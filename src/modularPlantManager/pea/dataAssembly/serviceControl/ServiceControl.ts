@@ -81,7 +81,7 @@ export class ServiceControl extends DataAssembly {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.StateCur;
 		this.defaultReadDataItemType = 'number';

@@ -45,7 +45,7 @@ export class BinManInt extends BinMan {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {

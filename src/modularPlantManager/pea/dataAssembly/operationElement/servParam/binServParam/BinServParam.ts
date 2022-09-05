@@ -41,7 +41,7 @@ export class BinServParam extends ServParam {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'boolean';

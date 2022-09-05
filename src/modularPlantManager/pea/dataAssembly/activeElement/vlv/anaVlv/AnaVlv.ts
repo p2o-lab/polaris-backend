@@ -44,7 +44,7 @@ export class AnaVlv extends Vlv {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {

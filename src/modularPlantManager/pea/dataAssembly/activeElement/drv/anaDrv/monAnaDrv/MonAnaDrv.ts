@@ -44,7 +44,7 @@ export class MonAnaDrv extends AnaDrv {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {

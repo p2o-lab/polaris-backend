@@ -44,7 +44,7 @@ export class MonBinDrv extends BinDrv {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {

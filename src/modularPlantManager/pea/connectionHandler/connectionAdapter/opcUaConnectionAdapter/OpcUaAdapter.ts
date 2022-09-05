@@ -286,7 +286,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 	}
 
 	private findAlreadyMonitoredDataItem(ciData: CIData): string | undefined {
-		let monitoredNodeKey: string | undefined = undefined;
+		let monitoredNodeKey: string | undefined;
 		for (const [key, value] of this.nodes) {
 			if (value.nodeId.identifier === ciData.nodeId.identifier && value.nodeId.namespaceIndex === ciData.nodeId.namespaceIndex) {
 				monitoredNodeKey = key;

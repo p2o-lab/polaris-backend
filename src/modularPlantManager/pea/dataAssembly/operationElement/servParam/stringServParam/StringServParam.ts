@@ -41,7 +41,7 @@ export class StringServParam extends ServParam {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.VOut;
 		this.defaultReadDataItemType = 'string';

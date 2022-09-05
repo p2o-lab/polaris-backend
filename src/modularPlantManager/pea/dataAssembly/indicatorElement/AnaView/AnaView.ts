@@ -46,7 +46,7 @@ export class AnaView extends IndicatorElement {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 
 		this.defaultReadDataItem = this.dataItems.V;
 		this.defaultReadDataItemType = 'number';

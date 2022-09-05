@@ -46,7 +46,7 @@ export class Drv extends ActiveElement {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 	protected initializeBaseFunctions() {
 		super.initializeBaseFunctions();

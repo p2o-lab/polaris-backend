@@ -44,7 +44,7 @@ export class MonAnaVlv extends AnaVlv {
 			this.initializeDataItems(options, keyList);
 			this.initializeBaseFunctions();
 			this.subscribe().then();
-		}	
+		}
 	}
 
 	protected initializeBaseFunctions() {
