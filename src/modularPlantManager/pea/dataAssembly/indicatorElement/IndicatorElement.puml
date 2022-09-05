@@ -25,16 +25,15 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include AnaView/AnaView.puml
-!include BinView/BinView.puml
-!include DIntView/DIntView.puml
-!include StringView/StringView.puml
+!include ../DataAssembly.puml
 
 class IndicatorElement{
     + readonly dataItems!: IndicatorElementRuntime
-    + readonly wqc: WQC
+    + wqc!: WQC
 
+    + IndicatorElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
     + toJson(): ParameterInterface
+    # initializeBaseFunctions()
 }
 
 IndicatorElement *- IndicatorElementSpec
@@ -42,7 +41,7 @@ IndicatorElementSpec ..> IndicatorElementMockup : <<use>>
 IndicatorElement *- IndicatorElementMockup
 
 IndicatorElement *- "1" IndicatorElementRuntime
-
+IndicatorElement *- WQC
 
 IndicatorElement <|-- AnaView
 IndicatorElement <|-- BinView

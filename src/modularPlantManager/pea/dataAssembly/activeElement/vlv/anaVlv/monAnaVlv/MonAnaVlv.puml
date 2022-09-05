@@ -25,14 +25,24 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-
+!include ../AnaVlv.puml
+interface MonAnaVlvRuntime{
+    + PosReachedFbk: DataItem<boolean>;
+    + PosTolerance: DataItem<number>;
+    + MonPosTi: DataItem<number>;
+    + MonPosErr: DataItem<boolean>;
+}
 class MonAnaVlv{
    + readonly dataItems!: MonAnaVlvRuntime
-   + readonly feedbackMonitoring: FeedbackMonitoring
+   + feedbackMonitoring: FeedbackMonitoring
+
+   + MonAnaVlv(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+   # initializeBaseFunctions()
  }
 MonAnaVlv *- MonAnaVlvSpec
 MonAnaVlvSpec ..> MonAnaVlvMockup : <<use>>
 MonAnaVlv *- MonAnaVlvMockup
+MonAnaVlv *- MonAnaVlvRuntime
 MonAnaVlv *- FeedbackMonitoring
 
 

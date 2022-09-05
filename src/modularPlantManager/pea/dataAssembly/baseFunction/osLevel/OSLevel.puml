@@ -26,14 +26,15 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-interface OSLevel{
-    + DataItem<number>
+interface OSLevelRuntime{
+    + OSLevel: DataItem<number>
 }
 
 class OSLevel{
-    - dAController: any
-    - initialize(): void
-    + OSLevel(): number | undefined
+    - readonly dataItems: OSLevelRuntime
+    + OSLevel(requiredDataItems: Required<OSLevelRuntime>)
+    + get osLevel(): number
+    + set osLevel(value: number)
 }
 
 OSLevelRuntime <-- OSLevel

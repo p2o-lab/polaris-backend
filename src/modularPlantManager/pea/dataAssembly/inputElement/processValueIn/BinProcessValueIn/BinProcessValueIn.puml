@@ -25,9 +25,18 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../../InputElement.puml
 
+interface BinProcessValueInRuntime{
+    + VExt: DataItem<boolean>;
+    + VState0: DataItem<boolean>;
+    + VState1: DataItem<boolean>;
+}
 class BinProcessValueIn{
 	+ readonly dataItems!: BinProcessValueInRuntime
+
+	+ BinProcessValueIn(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+	# initializeBaseFunctions()
 }
 
 BinProcessValueIn *- BinProcessValueInSpec

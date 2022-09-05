@@ -48,8 +48,9 @@ interface LimitMonitoringRuntime {
 }
 
 class LimitMonitoring{
-    - dAController: any
-    - initialize(): void
+   +  readonly dataItems!: LimitMonitoringRuntime
+
+   + LimitMonitoring(requiredDataItems: Required<LimitMonitoringRuntime>)
 }
 
 LimitMonitoringRuntime <-- LimitMonitoring

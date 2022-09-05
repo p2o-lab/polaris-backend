@@ -25,23 +25,24 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include healthStateView/HealthStateView.puml
-!include lockView/LockView4/Lockview4.puml
+!include ../DataAssembly.puml
 
 class DiagnosticElement{
-    + readonly dataItems!: DiagnosticElementRuntime
-    + readonly wqc: WQC
-}
+    + readonly dataItems !: DiagnosticElementRuntime
+    + wqc !: WQC
 
+    + DiagnosticElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+}
 
 DiagnosticElement *- DiagnosticElementSpec
 DiagnosticElementSpec ..> DiagnosticElementMockup : <<use>>
 DiagnosticElement *- DiagnosticElementMockup
+
 DiagnosticElement *- DiagnosticElementRuntime
 DiagnosticElement *- WQC
 
 DiagnosticElement <|-- LockView4
 DiagnosticElement <|-- HealthStateView
-
 
 @enduml

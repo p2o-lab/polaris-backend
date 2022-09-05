@@ -22,26 +22,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
- 
 @startuml
 'https://plantuml.com/class-diagram
-!include ../IndicatorElement.puml
-interface StringViewRuntime{
-    + Text: DataItem<string>;
+
+class DataItemFactory{
+   + static create<T extends string | number | boolean>(options: DataItemModel, connectionHandler?: ConnectionHandler): DataItem<T>
 }
 
-class StringView{
-    + readonly dataItems!: StringViewRuntime
-
-    + StringView(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
-    # initializeBaseFunctions()
-    + get Text(): string | undefined
-
-}
-StringView *- StringViewSpec
-StringViewSpec ..> StringViewMockup : <<use>>
-StringView *- StringViewMockup
-
-StringView *- "1" StringViewRuntime
+DataItemFactory "<<create>>"..> DataItem
 
 @enduml

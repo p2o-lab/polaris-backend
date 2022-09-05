@@ -25,13 +25,21 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-
+!include ../AnaMan.puml
 !include ../../../../baseFunction/sourceMode/SourceModeController.puml
 !include ../../../../baseFunction/wqc/WQC.puml
+
+interface AnaManIntRuntime{
+	+ VInt: DataItem<number>;
+}
+
 class AnaManInt{
     + readonly dataItems!: AnaManIntRuntime
-    + readonly sourceMode: SourceModeController
-    + readonly wqc: WQC
+    + sourceMode: SourceModeController
+    + wqc: WQC
+
+    + AnaManInt(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 
 AnaManInt *- AnaManIntSpec

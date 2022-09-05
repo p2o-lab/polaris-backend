@@ -39,15 +39,10 @@ interface OpModeRuntime{
 	+ StateOffAct: DataItem<boolean>
 }
 
-enum OperationMode{
-    Offline
-    Operator
-    Automatic
-}
 
 class OpMode{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems: OpModeRuntime
+    + OpMode(requiredDataItems: Required<OpModeRuntime>)
     + getOperationMode(): OperationMode
     + isOpMode(expectedOpMode: OperationMode): boolean
     + async waitForOpModeToPassSpecificTest(expectedOpMode: OperationMode): Promise<void>
@@ -61,7 +56,6 @@ class OpMode{
 }
 
 OpModeRuntime <-- OpMode
-OperationMode <-- OpMode
 OpModeSpec --> OpMode : <<uses>>
 OpModeSpec --> OpModeMockup : <<uses>>
 

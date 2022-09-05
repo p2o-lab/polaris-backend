@@ -25,10 +25,15 @@
  
 @startuml
 'https://plantuml.com/class-diagram
+!include ../DintView.puml
 
 class DIntMon{
-    + dataItems!: AnaMonRuntime
-    + readonly osLevel: OSLevel
+    + dataItems: AnaMonRuntime
+    + osLevel: OSLevel
+    + limitMonitoring: LimitMonitoring
+
+    + DIntMonoptions: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 DIntMon *- DIntMonSpec
 DIntMonSpec ..> DIntMonMockup : <<use>>
@@ -36,4 +41,5 @@ DIntMon *- DIntMonMockup
 
 DIntMon *-- "1" AnaMonRuntime
 DIntMon *-- "1" OSLevel
+DIntMon *-- "1" LimitMonitoring
 @enduml

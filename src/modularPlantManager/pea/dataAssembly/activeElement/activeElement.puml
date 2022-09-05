@@ -25,15 +25,18 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include PIDCtrl/PIDCtrl.puml
-!include ./vlv/Vlv.puml
-!include ./drv/Drv.puml
+!include ../DataAssembly.puml
 
 class ActiveElement{
-    + readonly dataItems!: IndicatorElementRuntime
-    + readonly osLevel: OSLevel;
-    + readonly wqc: WQC
+    + dataItems : ActiveElementRuntime;
+    + osLevel : OSLevel;
+    + wqc : WQC;
+
+    + ActiveElement(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+
+    # initializeBaseFunctions()
 }
+
 ActiveElement <|-- PIDCtrl
 ActiveElement <|-- Vlv
 ActiveElement <|-- Drv
@@ -41,6 +44,10 @@ ActiveElement <|-- Drv
 ActiveElement *- ActiveElementSpec
 ActiveElementSpec ..> ActiveElementMockup : <<use>>
 ActiveElement *- ActiveElementMockup
+
+ActiveElement *- ActiveElementRuntime
+ActiveElement *- OSLevel
+ActiveElement *- WQC
 
 abstract class Vlv
 abstract class Drv

@@ -32,8 +32,8 @@ interface ScaleSettingsRuntime{
 }
 
 class ScaleSettings{
-    - dAController: any
-    - initialize(): void
+     + readonly dataItems: ScaleSettingsRuntime
+     + ScaleSettings(requiredDataItems: Required<ScaleSettingsRuntime>)
 }
 
 ScaleSettingsRuntime <-- ScaleSettings

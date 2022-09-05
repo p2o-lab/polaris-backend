@@ -25,19 +25,52 @@
  
 @startuml
 'https://plantuml.com/class-diagram
-!include ../baseFunction/wqc/WQC.puml
-!include ../baseFunction/opMode/OpMode.puml
-!include ../baseFunction/serviceSourceMode/ServiceSourceModeController.puml
-class ServiceControl{
-    + readonly dataItems!: ServiceControlRuntime
-    + readonly wqc: WQC
-    + readonly opMode: OpMode
-    + readonly serviceSourceMode: ServiceSourceModeController
+!include ../DataAssembly.puml
+
+interface ServiceControlRuntime{
+        +CommandOp: DataItem<number>;
+    	+CommandInt: DataItem<number>;
+    	+CommandExt: DataItem<number>;
+    	+CommandEn: DataItem<number>;
+    	+StateCur: DataItem<number>;
+        +ProcedureOp: DataItem<number>;
+    	+ProcedureExt: DataItem<number>;
+    	+ProcedureInt: DataItem<number>;
+    	+ProcedureCur: DataItem<number>;
+    	+ProcedureReq: DataItem<number>;
+    	+InteractQuestionID: DataItem<number>;
+    	+InteractAnswerID: DataItem<number>;
+    	+PosTextID: DataItem<number>;
 }
 
-ServiceControl *- ServiceControlRuntime
+
+class ServiceControl{
+    + readonly dataItems!: ServiceControlRuntime
+    + readonly eventEmitter!: ServiceControlEmitter
+    + opMode!: ServiceOpMode
+    + osLevel!: OSLevel
+    + serviceSourceMode: ServiceSourceModeController
+    + wqc: WQC
+    - readonly logger: Category = catService
+
+    + ServiceControl(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
+    + currentProcedure(): number | undefined
+    + requestedProcedure(): number | undefined
+    - async subscribeToChanges(): Promise<void>
+
+
+}
+
+ServiceControl *- ServiceControlSpec
+ServiceControlSpec ..> ServiceControlMockup : <<use>>
+ServiceControl *- ServiceControlMockup
+
+ServiceControl <-- ServiceControlRuntime
+ServiceControl *- ServiceControlEmitter
 ServiceControl *- WQC
-ServiceControl *- OpMode
+ServiceControl *- ServiceOpMode
+ServiceControl *- OSLevel
 ServiceControl *- ServiceSourceModeController
 
 @enduml

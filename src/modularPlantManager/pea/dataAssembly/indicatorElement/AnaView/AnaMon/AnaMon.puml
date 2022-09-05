@@ -27,6 +27,7 @@
 'https://plantuml.com/class-diagram
 !include ../../../baseFunction/limitMonitoring/LimitMonitoring.puml
 !include ../../../baseFunction/osLevel/OSLevel.puml
+!include ../AnaView.puml
 
 interface AnaMonRuntime
 
@@ -34,6 +35,9 @@ class AnaMon{
     + dataItems!: AnaMonRuntime
     + limitMonitoring: LimitMonitoring
     + osLevel: OSLevel
+
+    + AnaMon(options: DataAssemblyModel, connectionHandler: ConnectionHandler, initial = false)
+    # initializeBaseFunctions()
 }
 AnaMon --> AnaMonRuntime
 

@@ -36,8 +36,9 @@ interface FeedbackMonitoringRuntime{
 }
 
 class FeedbackMonitoring{
-    - dAController: any
-    - initialize(): void
+    + readonly dataItems!: FeedbackMonitoringRuntime;
+
+    +FeedbackMonitoring(requiredDataItems: Required<FeedbackMonitoringRuntime>)
 }
 
 FeedbackMonitoringRuntime <-- FeedbackMonitoring
