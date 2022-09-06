@@ -30,7 +30,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {getDataAssemblyModel, getEmptyDataAssemblyModel} from './DataAssembly.mockup';
 import {ConnectionHandler} from '../connectionHandler/ConnectionHandler';
 import {BaseDataItem} from './dataItem/DataItem';
-import {MTPDataTypes} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

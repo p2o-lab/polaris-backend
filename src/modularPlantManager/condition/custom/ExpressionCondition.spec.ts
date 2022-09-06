@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {ConditionType, PEAOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../../pea/PEA';
+import {ConditionType} from '@p2olab/polaris-interface';
+import {PEA} from '../../pea';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

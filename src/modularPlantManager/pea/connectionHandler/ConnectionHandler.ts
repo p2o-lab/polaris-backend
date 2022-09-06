@@ -133,7 +133,7 @@ export class ConnectionHandler extends (EventEmitter as new() => ConnectionEmitt
 		if (adapterId) {
 			const adapter = this._connectionAdapters.find(adapter => adapter.id === adapterId);
 			if (adapter && adapter.connected) {
-				adapter.on('monitoredNodeChanged', (data: any) => {
+				adapter.on('monitoredNodeChanged', (data) => {
 					console.log(`[${this.id}] ${data.monitoredNodeId} changed to ${data.value}`);
 					this.emit('monitoredDataItemChanged', {
 						monitoredDataItemId: data.monitoredNodeId,

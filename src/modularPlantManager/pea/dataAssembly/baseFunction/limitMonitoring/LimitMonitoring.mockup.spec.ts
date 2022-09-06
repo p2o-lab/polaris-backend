@@ -28,7 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getLimitMonitoringDataItemModel, LimitMonitoringMockup} from './LimitMonitoring.mockup';
 import {ConnectionHandler} from 'src/modularPlantManager/pea/connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -173,7 +172,6 @@ describe('LimitMonitoringMockup', () => {
 
 			let mockupServer: MockupServer;
 			let connectionHandler: ConnectionHandler;
-			let adapterId: string;
 
 			beforeEach(async function () {
 				this.timeout(5000);
@@ -182,7 +180,6 @@ describe('LimitMonitoringMockup', () => {
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'Ana');
 				await mockupServer.start();
 				connectionHandler = new ConnectionHandler();
-				adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			});
 
 			afterEach(async () => {
@@ -233,7 +230,6 @@ describe('LimitMonitoringMockup', () => {
 
 			let mockupServer: MockupServer;
 			let connectionHandler: ConnectionHandler;
-			let adapterId: string;
 
 			beforeEach(async function () {
 				this.timeout(5000);
@@ -242,7 +238,6 @@ describe('LimitMonitoringMockup', () => {
 				new LimitMonitoringMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable', 'DInt');
 				await mockupServer.start();
 				connectionHandler = new ConnectionHandler();
-				adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			});
 
 			afterEach(async () => {

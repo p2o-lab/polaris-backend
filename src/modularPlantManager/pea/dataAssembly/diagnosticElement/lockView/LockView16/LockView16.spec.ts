@@ -32,7 +32,6 @@ import {getLockView16DataAssemblyModel, LockView16Mockup} from './LockView16.moc
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 import {BaseDataItem} from '../../../dataItem/DataItem';
-import {MTPDataTypes} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

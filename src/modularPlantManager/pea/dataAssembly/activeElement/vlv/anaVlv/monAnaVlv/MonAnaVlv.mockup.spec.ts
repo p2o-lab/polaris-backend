@@ -28,7 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {getMonAnaVlvDataAssemblyModel, getMonAnaVlvDataItemModel, MonAnaVlvMockup} from './MonAnaVlv.mockup';
 import {MockupServer} from '../../../../../../_utils';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -74,7 +73,6 @@ describe('MonAnaVlvMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -83,7 +81,6 @@ describe('MonAnaVlvMockup', () => {
             new MonAnaVlvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

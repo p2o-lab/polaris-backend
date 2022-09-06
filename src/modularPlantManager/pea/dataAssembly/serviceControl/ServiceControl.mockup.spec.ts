@@ -29,7 +29,6 @@ import {MockupServer} from '../../../_utils';
 import {getServiceControlDataAssemblyModel, getServiceControlDataItemModel, ServiceControlMockup} from './ServiceControl.mockup';
 import {OperationMode, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -78,7 +77,6 @@ describe('ServiceControlMockup', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceControlMockup;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
         const mockupName = 'Variable';
 
         beforeEach(async function () {
@@ -87,7 +85,6 @@ describe('ServiceControlMockup', () => {
             mockup = new ServiceControlMockup(mockupServer.nameSpace, mockupServer.rootObject, mockupName);
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

@@ -27,7 +27,7 @@ import {SourceMode} from '@p2olab/polaris-interface';
 import {catDataAssembly} from '../../../../../logging';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, SourceModeDataItems} from '@p2olab/pimad-types';
+import {SourceModeDataItems} from '@p2olab/pimad-types';
 import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**

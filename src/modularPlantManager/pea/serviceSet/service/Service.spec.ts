@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {OperationMode, ParameterOptions, ServiceCommand, ServiceControlOptions, ServiceSourceMode,} from '@p2olab/polaris-interface';
+import {OperationMode, ParameterOptions, ServiceCommand, ServiceSourceMode} from '@p2olab/polaris-interface';
 
 import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';

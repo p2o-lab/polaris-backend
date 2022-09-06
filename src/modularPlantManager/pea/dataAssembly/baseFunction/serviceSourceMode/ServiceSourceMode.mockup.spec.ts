@@ -30,7 +30,6 @@ import {getServiceSourceModeDataItemModel, ServiceSourceModeMockup} from './Serv
 
 import {ServiceSourceMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 
@@ -87,7 +86,6 @@ describe('ServiceSourceModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeMockup;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -96,7 +94,6 @@ describe('ServiceSourceModeMockup', () => {
             mockup = new ServiceSourceModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {
@@ -146,7 +143,6 @@ describe('ServiceSourceModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: ServiceSourceModeMockup;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -156,7 +152,6 @@ describe('ServiceSourceModeMockup', () => {
             mockup.srcChannel= true;
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

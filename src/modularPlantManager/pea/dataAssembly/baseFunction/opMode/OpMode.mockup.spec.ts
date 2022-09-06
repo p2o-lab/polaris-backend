@@ -29,7 +29,6 @@ import {MockupServer} from '../../../../_utils';
 import {getOpModeDataItemModel, OpModeMockup} from './OpMode.mockup';
 import {OperationMode} from '@p2olab/polaris-interface';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 import { Access } from '@p2olab/pimad-types';
 
 
@@ -110,7 +109,6 @@ describe('OpModeMockup', () => {
         let mockupServer: MockupServer;
         let mockup: OpModeMockup;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -119,7 +117,6 @@ describe('OpModeMockup', () => {
             mockup = new OpModeMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

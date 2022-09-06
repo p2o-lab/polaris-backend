@@ -26,7 +26,7 @@
 import {OperationMode} from '@p2olab/polaris-interface';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, OperationModeDataItems} from '@p2olab/pimad-types';
+import {OperationModeDataItems} from '@p2olab/pimad-types';
 import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**

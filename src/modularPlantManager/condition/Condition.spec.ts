@@ -23,8 +23,8 @@
  * SOFTWARE.
  */
 
-import {ConditionType, PEAOptions, ServiceOptions} from '@p2olab/polaris-interface';
-import {PEA} from '../pea/PEA';
+import {ConditionType} from '@p2olab/polaris-interface';
+import {PEA} from '../pea';
 import {ConditionFactory, ExpressionCondition, NotCondition, TimeCondition} from './index';
 
 import * as chai from 'chai';

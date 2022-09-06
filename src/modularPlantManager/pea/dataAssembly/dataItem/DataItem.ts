@@ -30,7 +30,7 @@ import {catDataItem} from '../../../../logging';
 import {CIData, DataItemModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
 import {IDProvider} from '../../../_utils';
-import {Access, DataItem, MTPDataTypes} from '@p2olab/pimad-types';
+import {Access, DataItem} from '@p2olab/pimad-types';
 
 
 export interface BaseDataItem<T extends string | number | boolean> extends DataItemEmitter, DataItem<T>{
@@ -145,6 +145,7 @@ export class StaticDataItem<T extends string | number | boolean> extends ADataIt
 		return Promise.resolve(this.value);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	write<T>(value: T): Promise<void> {
 		return Promise.reject('Can not write to static DataItem!');
 	}

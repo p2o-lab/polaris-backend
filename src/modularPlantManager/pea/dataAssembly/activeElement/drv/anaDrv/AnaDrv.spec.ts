@@ -31,7 +31,6 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {AnaDrvMockup, getAnaDrvDataAssemblyModel} from './AnaDrv.mockup';
 import {MockupServer} from '../../../../../_utils';
-import {getEndpointDataModel} from '../../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -90,7 +89,6 @@ describe('AnaDrv', () => {
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let dataAssembly: AnaDrv;
-		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
@@ -100,7 +98,6 @@ describe('AnaDrv', () => {
 			options = anaDrvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			dataAssembly = new AnaDrv(options, connectionHandler, true);
 			await dataAssembly.subscribe();
 		});

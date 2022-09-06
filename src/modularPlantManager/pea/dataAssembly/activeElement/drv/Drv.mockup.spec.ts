@@ -30,7 +30,6 @@ import {DrvMockup, getDrvDataAssemblyModel, getDrvDataItemModel} from './Drv.moc
 import {MockupServer} from '../../../../_utils';
 import {BinDrvMockup} from './binDrv/BinDrv.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -76,7 +75,6 @@ describe('DrvMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -85,7 +83,6 @@ describe('DrvMockup', () => {
             new BinDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

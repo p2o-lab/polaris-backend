@@ -315,7 +315,7 @@ export class OpcUaAdapter extends ConnectionAdapter {
 			const monitoredItemGroup: ClientMonitoredItemGroup = await this.subscription.monitorItems(
 				options,
 				{
-					samplingInterval: 100,
+					samplingInterval: samplingInterval,
 					discardOldest: true,
 					queueSize: 10
 				}, TimestampsToReturn.Both);

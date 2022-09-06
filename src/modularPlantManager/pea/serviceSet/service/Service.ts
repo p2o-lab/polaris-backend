@@ -23,7 +23,7 @@
  * SOFTWARE.
  */
 
-import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterInfo, ParameterOptions, ServiceCommand, ServiceInfo, ServiceOptions, ServiceSourceMode} from '@p2olab/polaris-interface';
+import {CommandEnableInfo, DataAssemblyOptions, OperationMode, ParameterOptions, ServiceCommand, ServiceInfo, ServiceSourceMode} from '@p2olab/polaris-interface';
 import {BaseDataItem, DynamicDataItem} from '../../connectionHandler';
 import {controlEnableToJson, DataAssemblyFactory, InputElement, ServiceControl, ServiceControlEnable, ServiceMtpCommand, ServiceState, ServParam} from '../../dataAssembly';
 
@@ -258,7 +258,7 @@ export class Service extends BaseService {
 				expectedState = 'EXECUTE';
 				break;
 		}
-		// await this.waitForStateChangeWithTimeout(expectedState, 1000);
+		await this.waitForStateChangeWithTimeout(expectedState, 1000);
 	}
 
 	public start(): Promise<void> {

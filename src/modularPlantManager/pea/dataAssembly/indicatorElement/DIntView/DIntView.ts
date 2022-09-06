@@ -28,7 +28,7 @@ import {IndicatorElement} from '../IndicatorElement';
 import {ScaleSettings, UnitSettings} from '../../baseFunction';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {DIntViewDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {DIntViewDataItems} from '@p2olab/pimad-types';
 
 export class DIntView extends IndicatorElement {
 

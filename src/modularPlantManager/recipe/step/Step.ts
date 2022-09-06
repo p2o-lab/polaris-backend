@@ -90,7 +90,12 @@ export class Step extends (EventEmitter as new () => StepEmitter) {
 	}
 
 	public getUsedPEAs(): Set<PEA> {
-		let set = new Set<PEA>(this.operations.map((op: Operation) => op.pea!));
+		let set = new Set<PEA>();
+		this.operations.forEach((op: Operation) => {
+			if (op.pea) {
+				set.add(op.pea);
+			}
+		});
 		this.transitions.forEach((tr) => {
 			set = new Set([...set, ...tr.getUsedPEAs()]);
 		});

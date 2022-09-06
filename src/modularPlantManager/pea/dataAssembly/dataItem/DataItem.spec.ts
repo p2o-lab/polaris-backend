@@ -28,7 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {DataItemModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../_utils';
 import {ConnectionHandler} from '../../connectionHandler/ConnectionHandler';
-import {OpcUaDataItem} from './DataItem';
 import {DataItemFactory} from './DataItemFactory';
 import {getEmptyCIDataModel, getEmptyDataItemModel} from './DataItem.mockup';
 import {getEndpointDataModel} from '../../connectionHandler/ConnectionHandler.mockup';

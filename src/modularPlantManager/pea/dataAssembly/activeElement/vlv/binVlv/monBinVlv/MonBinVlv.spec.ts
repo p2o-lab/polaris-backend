@@ -27,7 +27,7 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../../../_utils';
-import {getMonBinVlvDataAssemblyModel, getMonBinVlvDataItemModel, MonBinVlvMockup} from './MonBinVlv.mockup';
+import {getMonBinVlvDataAssemblyModel, MonBinVlvMockup} from './MonBinVlv.mockup';
 
 import {MonBinVlv} from './MonBinVlv';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';

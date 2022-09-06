@@ -28,7 +28,7 @@ import {BaseDataItem} from '../../dataItem/DataItem';
 import {catDataAssembly} from '../../../../../logging';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, ServiceOperationModeDataItems} from '@p2olab/pimad-types';
+import {ServiceOperationModeDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[ServiceOpMode]]

@@ -28,7 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {getMonAnaDrvDataAssemblyModel, getMonAnaDrvDataItemModel, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {MockupServer} from '../../../../../../_utils';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -75,7 +74,6 @@ describe('MonAnaDrvMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(5000);
@@ -84,7 +82,6 @@ describe('MonAnaDrvMockup', () => {
             new MonAnaDrvMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

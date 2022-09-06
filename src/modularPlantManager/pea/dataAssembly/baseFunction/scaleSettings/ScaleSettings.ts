@@ -25,7 +25,7 @@
 
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, VScaleSettingDataItems} from '@p2olab/pimad-types';
+import {VScaleSettingDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[ScaleSettings]]

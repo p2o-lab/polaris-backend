@@ -25,7 +25,7 @@
 
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, VLimitMonitoringDataItems} from '@p2olab/pimad-types';
+import {VLimitMonitoringDataItems} from '@p2olab/pimad-types';
 
 /**
  * Events emitted by [[LimitMonitoring]]

@@ -96,7 +96,7 @@ export class RecipeRun extends (EventEmitter as new() => RecipeEmitter) {
 		this._endTime = new Date();
 		this._status = RecipeState.stopped;
 		this.removeRecipeListeners();
-		this.emit('stopped', this.recipe.currentStep!);
+		this.emit('stopped', this.recipe.currentStep);
 		await this.recipe.stop();
 	}
 

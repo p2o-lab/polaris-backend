@@ -28,7 +28,7 @@ import {ScaleSettings, UnitSettings} from '../../../baseFunction';
 import {InputElement} from '../../InputElement';
 import {ConnectionHandler} from '../../../../connectionHandler/ConnectionHandler';
 import {keys} from 'ts-transformer-keys';
-import {DIntProcessValueInDataItems, MTPDataTypes} from '@p2olab/pimad-types';
+import {DIntProcessValueInDataItems} from '@p2olab/pimad-types';
 
 export class DIntProcessValueIn extends InputElement {
 

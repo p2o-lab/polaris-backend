@@ -23,18 +23,12 @@
  * SOFTWARE.
  */
 
-import {
-	DataAssemblyOptions,
-	ParameterInfo,
-	ProcedureInfo,
-	ProcedureOptions
-} from '@p2olab/polaris-interface';
+import {DataAssemblyOptions, ParameterInfo, ProcedureInfo} from '@p2olab/polaris-interface';
 import {
 	DataAssemblyFactory,
 	IndicatorElement, InputElement,
 	ServParam
 } from '../../../dataAssembly';
-
 import {EventEmitter} from 'events';
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {Category} from 'typescript-logging';

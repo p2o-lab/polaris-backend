@@ -28,8 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 
 import {getMonBinVlvDataAssemblyModel, getMonBinVlvDataItemModel, MonBinVlvMockup} from './MonBinVlv.mockup';
 import {MockupServer} from '../../../../../../_utils';
-import {MonBinVlvOptions} from '@p2olab/polaris-interface';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

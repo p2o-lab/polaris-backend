@@ -89,10 +89,12 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	}
 
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async initialize(options?: AdapterOptions): Promise<void>{
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async update(options: AdapterOptions){
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 	}
@@ -103,6 +105,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	 * Open connection
 	 * @returns {Promise<void>}
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async connect(connectOptions?: AdapterConnectOptions): Promise<void> {
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 		return Promise.reject();
@@ -121,6 +124,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	 * read the value of provided ciData
 	 * @returns {Promise<any | undefined>}
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async read(ciData: CIData): Promise<any | undefined> {
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 		return Promise.reject();
@@ -131,6 +135,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	 * Write the provided value to provided NodeID information
 	 * @returns {Promise<any | undefined>}
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async write(ciData: CIData, value: number | string | boolean): Promise<void> {
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 		return Promise.reject();
@@ -140,6 +145,7 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	 * Add DataItem to monitoring
 	 * @returns {string}
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public addDataItemToMonitoring(ciData: CIData, identifier?: string): string {
 		throw new Error('Not implemented yet!');
 	}
@@ -148,10 +154,12 @@ export abstract class ConnectionAdapter extends (EventEmitter as new() => Connec
 	 * Remove Node from monitoring
 	 * @returns {string}
 	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public removeNodeFromMonitoring(identifier: string): void {
 		throw new Error('Not implemented yet!');
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async startMonitoring(samplingInterval = 100): Promise<void> {
 		this.logger.warn(`[${this.id}] Not implemented yet`);
 		return Promise.reject();

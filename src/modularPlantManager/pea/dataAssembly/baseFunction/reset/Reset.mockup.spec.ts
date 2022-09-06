@@ -28,7 +28,6 @@ import * as chaiAsPromised from 'chai-as-promised';
 import {MockupServer} from '../../../../_utils';
 import {getResetDataItemModel, ResetMockup} from './Reset.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 import {Access} from '@p2olab/pimad-types';
 
 chai.use(chaiAsPromised);
@@ -74,7 +73,6 @@ describe('ResetMockup', () => {
 
         let mockupServer: MockupServer;
         let connectionHandler: ConnectionHandler;
-        let adapterId: string;
 
         beforeEach(async function () {
             this.timeout(10000);
@@ -83,7 +81,6 @@ describe('ResetMockup', () => {
             new ResetMockup(mockupServer.nameSpace, mockupServer.rootObject, 'Variable');
             await mockupServer.start();
             connectionHandler = new ConnectionHandler();
-            adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
         });
 
         afterEach(async () => {

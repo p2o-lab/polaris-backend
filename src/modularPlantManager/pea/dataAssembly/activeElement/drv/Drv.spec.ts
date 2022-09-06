@@ -33,7 +33,6 @@ import {DataAssemblyModel} from '@p2olab/pimad-interface';
 import {MockupServer} from '../../../../_utils';
 import {DrvMockup, getDrvDataAssemblyModel} from './Drv.mockup';
 import {ConnectionHandler} from '../../../connectionHandler/ConnectionHandler';
-import {getEndpointDataModel} from '../../../connectionHandler/ConnectionHandler.mockup';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;
@@ -65,7 +64,6 @@ describe('Drv', () => {
 		let mockupServer: MockupServer;
 		let connectionHandler: ConnectionHandler;
 		let dataAssembly: Drv;
-		let adapterId: string;
 
 		beforeEach(async function () {
 			this.timeout(10000);
@@ -75,7 +73,6 @@ describe('Drv', () => {
 			options = drvMockup.getDataAssemblyModel();
 			await mockupServer.start();
 			connectionHandler = new ConnectionHandler();
-			adapterId = connectionHandler.addConnectionAdapter(getEndpointDataModel(mockupServer.endpoint));
 			dataAssembly = new Drv(options, connectionHandler, true);
 			await dataAssembly.subscribe();
 		});

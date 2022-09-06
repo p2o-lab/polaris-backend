@@ -27,7 +27,6 @@ import * as chai from 'chai';
 import * as chaiAsPromised from 'chai-as-promised';
 import {getInputElementDataAssemblyModel, getInputElementDataItemModel, InputElementMockup} from './InputElement.mockup';
 import {MockupServer} from '../../../_utils';
-import {DataAssemblyModel} from '@p2olab/pimad-interface';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

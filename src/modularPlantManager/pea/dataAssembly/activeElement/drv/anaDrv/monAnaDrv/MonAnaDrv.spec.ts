@@ -33,7 +33,6 @@ import {MockupServer} from '../../../../../../_utils';
 import {getMonAnaDrvDataAssemblyModel, MonAnaDrvMockup} from './MonAnaDrv.mockup';
 import {ConnectionHandler} from '../../../../../connectionHandler/ConnectionHandler';
 import {getEndpointDataModel} from '../../../../../connectionHandler/ConnectionHandler.mockup';
-import {toURI} from 'node-opcua';
 
 chai.use(chaiAsPromised);
 const expect = chai.expect;

@@ -25,7 +25,7 @@
 
 import StrictEventEmitter from 'strict-event-emitter-types';
 import {EventEmitter} from 'events';
-import {MTPDataTypes, OSLevelDataItems} from '@p2olab/pimad-types';
+import {OSLevelDataItems} from '@p2olab/pimad-types';
 import {BaseDataItem} from '../../dataItem/DataItem';
 
 /**
