@@ -38,7 +38,7 @@
     "prepare": "ts-patch install -s",
     "start": "ts-node ./src/index.ts",
     "test": "nyc mocha --exit --require ts-node/register --recursive \"./src/**/*.spec.ts\"",
-    "typedoc": "npm run clrTypeDoc && typedoc --mode file --module commonjs --out typedoc/ --target ES2017 --excludePrivate --readme none src/"
+    "typedoc": "npm run clrTypeDoc && typedoc --out typedoc/ --excludePrivate --readme none --entryPointStrategy expand ./src"
   },
   "bin": {
     "polaris-backend": "./bin/polaris-backend"

@@ -164,7 +164,7 @@ peaRouter.get('/:peaId/connectionInfo', (req: Request, res: Response) => {
  * @apiName AddConnection
  * @apiGroup PEA
  * @apiParam {string} peaId
- * @apiBody {adapterOption: AdapterOption}
+ * @apiParam (Request body) {AdapterOption} adapterOption
  */
 peaRouter.post('/:peaId/addConnection', async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -196,7 +196,7 @@ peaRouter.post('/:peaId/addConnection', async (req: Request, res: Response) => {
  * @apiName InitializeConnection
  * @apiGroup PEAController
  * @apiParam {string} peaId
- * @apiBody {}
+ * @apiParam (Request body) {string[]} adapterIds
  */
 peaRouter.post('/:peaId/connection/initialize', async (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -252,7 +252,7 @@ peaRouter.post('/:peaId/connection/:connectionAdapterId/changeEndpoint', asyncHa
  * @api {get} /:peaId/download - Download PEA options
  * @apiName GetPEADownload
  * @apiGroup PEA
- * @apiParam {string} peaId    ID of PEA to download related options.
+ * @apiParam {string} peaId  ID of PEA to download related options.
  */
 peaRouter.get('/:peaId/download', (req: Request, res: Response) => {
 	const manager: ModularPlantManager = req.app.get('manager');
@@ -323,7 +323,7 @@ peaRouter.post('/:peaId/disconnect', asyncHandler(async (req: Request, res: Resp
 }));
 
 /**
- * @api {delete} /:peaId - Delete PEA by ID
+ * @api {delete} /:peaId Delete PEA by ID
  * @apiName DeletePEA
  * @apiGroup PEA
  * @apiParam {string} peaId    ID of PEAController to be deleted
