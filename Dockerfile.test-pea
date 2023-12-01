@@ -16,7 +16,7 @@ RUN npm install
 RUN npm run build
 
 # production image
-FROM node:alpine
+FROM node:21.2-alpine3.18
 LABEL org.label-schema.name "test-pea"
 LABEL org.label-schema.docker.cmd "docker run -d -p 4334:4334 p2olab/test-pea"
 
